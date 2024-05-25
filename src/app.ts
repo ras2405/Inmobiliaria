@@ -1,15 +1,15 @@
 import express from "express";
 import { dbSync, sequelize } from "./config/database";
-import propertyRoutes from "./routes/propertyRoutes";
+import propertiesRoutes from "./routes/propertiesRoutes";
 
 const app = express();
-const port = 3000;
+const port = 3001;
 const main = async ()=>{
   
-  await dbSync(); // Llama a la función de sincronización después de la autenticación
+  await dbSync();
   
   app.use(express.json());
-  app.use('/api', propertyRoutes);
+  app.use('/api', propertiesRoutes);
   
   app.listen(port, async () => {
       console.log(`Server running on http://localhost:${port}`);

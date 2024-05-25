@@ -4,46 +4,42 @@ services:
   mysql:
     image: mysql:latest
     environment:
-      MYSQL_ROOT_PASSWORD: secret
-      MYSQL_DATABASE: mydatabase
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
-      - "3306:3306"
+      - "${MYSQL_PORT}:${MYSQL_PORT}"
     volumes:
       - mysql-data:/var/lib/mysql
 
   mongo:
     image: mongo:latest
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: secret
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     ports:
-      - "27017:27017"
+      - "${MONGO_PORT}:${MONGO_PORT}"
     volumes:
       - mongo-data:/data/db
-
-  
 
   redis:
     image: redis:latest
     command: redis-server
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT}:${REDIS_PORT}"
     volumes:
       - redis-data:/data
 
   rabbitmq:
     image: "rabbitmq:3-management"
     ports:
-      - "5672:5672" # Puerto estándar de RabbitMQ
-      - "15672:15672" # Puerto de la interfaz web de administración
+      - "${RABBITMQ_STANDARD_PORT}:${RABBITMQ_STANDARD_PORT}" # Puerto estándar de RabbitMQ
+      - "${RABBITMQ_INTERFACE_PORT}:${RABBITMQ_INTERFACE_PORT}" # Puerto de la interfaz web de administración
     environment:
-      RABBITMQ_DEFAULT_USER: "user"
-      RABBITMQ_DEFAULT_PASS: "password"
+      RABBITMQ_DEFAULT_USER: "${RABBITMQ_DEFAULT_USER}"
+      RABBITMQ_DEFAULT_PASS: "${RABBITMQ_DEFAULT_PASS}"
     volumes:
       - "rabbitmq_data:/var/lib/rabbitmq"
       - "rabbitmq_log:/var/log/rabbitmq"
-
-  
 
 volumes:
   mysql-data:

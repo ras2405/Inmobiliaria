@@ -1,5 +1,5 @@
 import { PropertyDto } from "../dtos/propertyDto";
-import { Property } from "../models/Property";
+import { Property } from "../models/property";
 
 export const findAllProperties = async () => {
     return await Property.findAll();

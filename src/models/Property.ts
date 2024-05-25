@@ -47,7 +47,7 @@ export const Property = sequelize.define('property', {
         type: DataTypes.STRING 
     },
     pictures: { 
-        type: DataTypes.ARRAY(DataTypes.STRING) 
+        type: DataTypes.STRING
     }
 }, {
     tableName: 'Property',

@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 // import { getErrorMessage } from '../utils/handleError';
-import * as propertyService from '../services/propertyService';
+import * as propertiesService from '../services/propertiesService';
 
 // Obtener todos los properties
 export const getProperties = async (req: Request, res: Response) => {
     try {      
-        const properties = await propertyService.findAllProperties();
+        const properties = await propertiesService.findAllProperties();
         res.status(200).json(properties);
     } catch (error: any) { // SACAR ANY
         res.status(400).json({ message: 'Error al obtener las Propiedades', error: Error(error) });
@@ -15,7 +15,7 @@ export const getProperties = async (req: Request, res: Response) => {
 // Obtener un property por su ID
 export const getProperty = async (req: Request, res: Response) => {
     try {
-        const property = await propertyService.findPropertyById(parseInt(req.params.id));
+        const property = await propertiesService.findPropertyById(parseInt(req.params.id));
         if (property) {
             res.json(property);
         } else {
@@ -29,7 +29,7 @@ export const getProperty = async (req: Request, res: Response) => {
 // Crear una nueva Propiedad
 export const createProperty = async (req: Request, res: Response) => {
     try {
-        const property = await propertyService.createProperty(req.body);
+        const property = await propertiesService.createProperty(req.body);
         res.status(201).json(property);
     } catch (error: any) { // SACAR ANY
         res.status(400).json({ message: 'Error al crear la propiedad', error: Error(error) });
@@ -40,7 +40,7 @@ export const createProperty = async (req: Request, res: Response) => {
 export const updateProperty = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const updated = await propertyService.updateProperty(parseInt(id), req.body);
+        const updated = await propertiesService.updateProperty(parseInt(id), req.body);
 
         if (updated[0] === 1) { // Sequelize update devuelve un array con el número de filas afectadas
             res.status(200).json({ message: 'Propiedad actualizada' });

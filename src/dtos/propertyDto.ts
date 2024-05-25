@@ -1,5 +1,5 @@
 export class PropertyDto{
-    id: number; //PREGUNTAR
+    id: number;
     name: string;    
     adults: number;
     kids: number;
