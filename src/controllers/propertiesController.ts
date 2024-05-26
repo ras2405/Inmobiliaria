@@ -1,10 +1,9 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 // import { getErrorMessage } from '../utils/handleError';
 import * as propertiesService from '../services/propertiesService';
 
-// Obtener todos los properties
 export const getProperties = async (req: Request, res: Response) => {
-    try {      
+    try {
         const properties = await propertiesService.findAllProperties();
         res.status(200).json(properties);
     } catch (error: any) { // SACAR ANY
@@ -12,7 +11,6 @@ export const getProperties = async (req: Request, res: Response) => {
     }
 };
 
-// Obtener un property por su ID
 export const getProperty = async (req: Request, res: Response) => {
     try {
         const property = await propertiesService.findPropertyById(parseInt(req.params.id));
@@ -26,17 +24,18 @@ export const getProperty = async (req: Request, res: Response) => {
     }
 };
 
-// Crear una nueva Propiedad
-export const createProperty = async (req: Request, res: Response) => {
+export const createProperty = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const property = await propertiesService.createProperty(req.body);
-        res.status(201).json(property);
-    } catch (error: any) { // SACAR ANY
-        res.status(400).json({ message: 'Error al crear la propiedad', error: Error(error) });
+        res.status(201).json({
+            status: 'success',
+            data: property
+        });
+    } catch (error) {
+        next(error);
     }
 };
 
-// Actualizar una propiedad existente
 export const updateProperty = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
@@ -48,6 +47,6 @@ export const updateProperty = async (req: Request, res: Response) => {
             res.status(404).json({ message: 'Propiedad no encontrada' });
         }
     } catch (error: any) { // SACAR ANY
-        res.status(400).json({ message: 'Error al actualizar la Propiedad', error: Error(error)});
+        res.status(400).json({ message: 'Error al actualizar la Propiedad', error: Error(error) });
     }
 };
