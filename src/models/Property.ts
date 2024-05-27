@@ -1,52 +1,52 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/database';
 
-export const Property = sequelize.define('property', { 
-    id: { 
-        type: DataTypes.INTEGER, 
-        autoIncrement: true, 
-        primaryKey: true 
+export const Property = sequelize.define('property', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
     },
-    name: { 
-        type: DataTypes.STRING 
+    name: {
+        type: DataTypes.STRING
     },
-    adults: { 
-        type: DataTypes.INTEGER 
+    adults: {
+        type: DataTypes.INTEGER
     },
-    kids: { 
-        type: DataTypes.INTEGER 
+    kids: {
+        type: DataTypes.INTEGER
     },
-    beds: { 
-        type: DataTypes.INTEGER 
+    beds: {
+        type: DataTypes.INTEGER
     },
-    singleBeds: { 
-        type: DataTypes.INTEGER 
+    singleBeds: {
+        type: DataTypes.INTEGER
     },
-    ac: { 
-        type: DataTypes.BOOLEAN 
+    ac: {
+        type: DataTypes.BOOLEAN
     },
-    wifi: { 
-        type: DataTypes.BOOLEAN 
+    wifi: {
+        type: DataTypes.BOOLEAN
     },
-    garage: { 
-        type: DataTypes.BOOLEAN 
+    garage: {
+        type: DataTypes.BOOLEAN
     },
-    type: { 
-        type: DataTypes.INTEGER 
+    type: {
+        type: DataTypes.INTEGER
     },
-    beachDistance: { 
-        type: DataTypes.INTEGER 
+    beachDistance: {
+        type: DataTypes.INTEGER
     },
-    state: { 
-        type: DataTypes.STRING 
+    state: {
+        type: DataTypes.STRING
     },
-    balneario: { 
-        type: DataTypes.STRING 
+    balneario: {
+        type: DataTypes.STRING
     },
-    neighborhood: { 
-        type: DataTypes.STRING 
+    neighborhood: {
+        type: DataTypes.STRING
     },
-    pictures: { 
+    pictures: {
         type: DataTypes.STRING
     }
 }, {
