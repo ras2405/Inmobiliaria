@@ -1,4 +1,4 @@
-import { Property } from "../models/property";
+import { Property } from "../models/Property";
 import { PropertyDto } from "../schemas/property";
 
 export const findAllProperties = async () => {

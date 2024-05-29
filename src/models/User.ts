@@ -16,7 +16,7 @@ export const User = sequelize.define('users', {
             }
         }
     },
-    document_type: {
+    documentType: {
         type: DataTypes.STRING,
         allowNull: false
     },
@@ -53,13 +53,13 @@ export const User = sequelize.define('users', {
         allowNull: false,
         validate: {
             is: {
-                args: /^[+]?[0-9\s-]$/,
-                msg: 'Name must contain text, from 3 to 30 characters'
+                args: /^[+]?[0-9\s-]{7,15}$/,
+                msg: 'Phone must be 7 and 15 numbers long'
             }
         }
     },
     role: {
-        type: DataTypes.ENUM('Admin', 'Operator','Proprietary','Tenant'),
+        type: DataTypes.ENUM('Admin', 'Operator','Owner','Tenant'),
         allowNull: false
     }
 /*Documento. Máximo de 30 chars dígitos, letras, guion y punto, otro carácter no es permitido.
