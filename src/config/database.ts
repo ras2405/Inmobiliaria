@@ -1,5 +1,5 @@
-import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
+import { Sequelize } from 'sequelize';
 
 dotenv.config();
 
@@ -8,8 +8,9 @@ const sequelize = new Sequelize(process.env.MYSQL_DATABASE!, process.env.MYSQL_R
   dialect: process.env.MYSQL_DIALECT as 'mysql',
 });
 
-import { Property } from '../models/property';
+import { Property } from '../models/Property';
 import { setRelationships } from '../models/relationships';
+import { User } from '../models/User';
 
 const syncTables = async () =>{
   try {
@@ -17,6 +18,7 @@ const syncTables = async () =>{
     if (process.env.MYSQL_SYNC === 'true') {      
       // Cambia 'force' a true si quieres que se borren y recreen las tablas
       await Property.sync();
+      await User.sync();
       console.log('Los modelos fueron sincronizados con la base de datos.');
     }
   } catch (error) {
@@ -28,4 +30,5 @@ const dbSync = async () => {
   await syncTables();  
 };
 
-export { sequelize, dbSync };
+export { dbSync, sequelize };
+
