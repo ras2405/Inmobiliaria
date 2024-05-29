@@ -25,7 +25,7 @@ export const User = sequelize.define('users', {
         allowNull: false,
         validate: {
             is: {
-                args: /^(a-z)(A-Z) {3,30}$/,
+                args: /^[(a-z)(A-Z) ñÇç]{3,30}$/,
                 msg: 'Name must contain text, from 3 to 30 characters'
             }
         }
@@ -35,7 +35,7 @@ export const User = sequelize.define('users', {
         allowNull: false,
         validate: {
             is: {
-                args: /^(a-z)(A-Z) {3,30}$/,
+                args: /^[(a-z)(A-Z) ñÇç]{3,30}$/,
                 msg: 'Name must contain text, from 3 to 30 characters'
             }
         }
