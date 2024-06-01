@@ -1,4 +1,4 @@
-import { Property } from "../models/property";
+import { Property } from "../models/Property";
 import { PropertyDto } from "../schemas/property";
 
 export const findAllProperties = async () => {
@@ -10,9 +10,7 @@ export const findPropertyById = async (id: number) => {
 };
 
 export const createProperty = async (propertyDto: PropertyDto) => {
-    if (!propertyDto) throw Error("Dto vacío");
-    let property = { ...propertyDto };
-    return await Property.create(property);
+    return await Property.create(propertyDto);
 };
 
 export const updateProperty = async (id: number, propertyDto: PropertyDto) => {
