@@ -8,9 +8,10 @@ const sequelize = new Sequelize(process.env.MYSQL_DATABASE!, process.env.MYSQL_R
   dialect: process.env.MYSQL_DIALECT as 'mysql',
 });
 
+import { Booking } from '../models/Booking';
 import { Property } from '../models/Property';
-import { setRelationships } from '../models/relationships';
 import { User } from '../models/User';
+import { setRelationships } from '../models/relationships';
 
 const syncTables = async () =>{
   try {
@@ -19,6 +20,7 @@ const syncTables = async () =>{
       // Cambia 'force' a true si quieres que se borren y recreen las tablas
       await Property.sync();
       await User.sync();
+      await Booking.sync();
       console.log('Los modelos fueron sincronizados con la base de datos.');
     }
   } catch (error) {
