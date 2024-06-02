@@ -21,10 +21,6 @@ export const Availability = sequelize.define('Availability', {
     endDate: {
         type: DataTypes.DATE,
     },
-    isAvailable: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false
-    }
 }, {
     tableName: 'Availabilities',
     timestamps: false

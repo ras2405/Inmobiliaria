@@ -8,7 +8,6 @@ export const availabilitySchema = z.object({
     endDate: z.string()
         .refine((date) => !isNaN(Date.parse(date)), { message: "Invalid date format" })
         .transform((date) => new Date(date)),
-    isAvailable: z.boolean(),
 });
 
 export type AvailabilityDto = z.infer<typeof availabilitySchema>;

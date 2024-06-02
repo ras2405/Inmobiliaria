@@ -12,7 +12,6 @@ export const errorHandler = (err: any, req: Request, res: Response, next: NextFu
         res.status(500).json({
             status: 'error',
             message: 'Internal Server Error',
-            details: []
         });
     }
 };

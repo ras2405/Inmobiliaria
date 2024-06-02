@@ -1,13 +1,13 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/database';
-export const User = sequelize.define('users', {
+export const User = sequelize.define('User', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
     document: {
-    type: DataTypes.STRING,
+        type: DataTypes.STRING,
         allowNull: false,
         validate: {
             is: {
@@ -59,17 +59,17 @@ export const User = sequelize.define('users', {
         }
     },
     role: {
-        type: DataTypes.ENUM('Admin', 'Operator','Owner','Tenant'),
+        type: DataTypes.ENUM('Admin', 'Operator', 'Owner', 'Tenant'),
         allowNull: false
     }
-/*Documento. Máximo de 30 chars dígitos, letras, guion y punto, otro carácter no es permitido.
-• Tipo de Documento por ej. C.I/ DNI, etc.
-• Nombre: texto mínimo de 3 y máximo de 30 chars.
-• Apellido: texto mínimo de 3 y máximo de 30 chars.
-• Email: único en el sistema validar con formato email.
-• Número de teléfono: texto que valide el formato telefónico.
-• Rol: Administrador/ Operario/ Propietario
-*/
+    /*Documento. Máximo de 30 chars dígitos, letras, guion y punto, otro carácter no es permitido.
+    • Tipo de Documento por ej. C.I/ DNI, etc.
+    • Nombre: texto mínimo de 3 y máximo de 30 chars.
+    • Apellido: texto mínimo de 3 y máximo de 30 chars.
+    • Email: único en el sistema validar con formato email.
+    • Número de teléfono: texto que valide el formato telefónico.
+    • Rol: Administrador/ Operario/ Propietario
+    */
 }, {
     tableName: 'Users',
     timestamps: false
