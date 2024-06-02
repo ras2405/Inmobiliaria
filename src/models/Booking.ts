@@ -1,6 +1,5 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/database';
-import { Property } from '../models/Property';
 
 export const Booking = sequelize.define('bookings', {
     id: {
@@ -81,11 +80,10 @@ export const Booking = sequelize.define('bookings', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: Property, // El nombre del modelo al que se hace referencia
+            model: 'Property', // El nombre del modelo al que se hace referencia
             key: 'id'   // El nombre del atributo en el modelo de referencia
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'SET NULL',
+        onUpdate: 'CASCADE'
     },
     startDate: {
         type: DataTypes.DATE,

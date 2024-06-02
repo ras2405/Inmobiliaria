@@ -8,6 +8,7 @@ const sequelize = new Sequelize(process.env.MYSQL_DATABASE!, process.env.MYSQL_R
   dialect: process.env.MYSQL_DIALECT as 'mysql',
 });
 
+
 import { Booking } from '../models/Booking';
 import { Property } from '../models/Property';
 import { User } from '../models/User';
