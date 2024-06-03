@@ -12,3 +12,13 @@ export const createAvailability = async (req: Request, res: Response, next: Next
         next(error);
     }
 };
+
+export const deleteAvailability = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const id = parseInt(req.params.id);
+        await availabilityService.deleteAvailability(id);
+        res.status(204).end();
+    } catch (error) {
+        next(error);
+    }
+};

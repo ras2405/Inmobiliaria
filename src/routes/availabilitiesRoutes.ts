@@ -6,5 +6,6 @@ import { availabilitySchema } from "../schemas/availability";
 const router = Router();
 
 router.post('/', validate(availabilitySchema), availabilitiesController.createAvailability);
+router.delete('/:id', availabilitiesController.deleteAvailability);
 
 export default router;
