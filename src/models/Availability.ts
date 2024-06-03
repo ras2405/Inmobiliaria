@@ -13,13 +13,14 @@ export const Availability = sequelize.define('Availability', {
             model: 'Properties',
             key: 'id'
         },
-        allowNull: false
+        allowNull: false,
+        onUpdate: 'CASCADE'
     },
     startDate: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
     },
     endDate: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
     },
 }, {
     tableName: 'Availabilities',

@@ -4,10 +4,6 @@ import { NotFoundError } from "../exceptions/NotFountError";
 import { Availability } from "../models/Availability";
 import { AvailabilityDto } from "../schemas/availability";
 
-// TODO: Si tengo una del 14/6 al 18/6, me deja agregar del 18/6 al 20/6
-// TODO: Mejorar implementación
-// TODO: Hacer delete
-// TODO: Hacer get desde property
 export const createAvailability = async (availabilityDto: AvailabilityDto) => {
     try {
         const existingAvailabilities = await findExistingAvailabilities(availabilityDto);
