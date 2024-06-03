@@ -8,7 +8,7 @@ const Sensor = new mongoose.Schema({
     address: { type: String, required: true },
     date: { type: Date, required: true },
     type: { type: String, required: true },
-    observableProperties: { type: Array, required: true }
+    observableProperties: { type: String, required: true }
 });
 
 const SensorModel = mongoose.model("Sensor", Sensor);

@@ -1,4 +1,5 @@
 Archivo .env
+
 ```
 ### MYSQL
 MYSQL_DATABASE=MainDb
@@ -13,6 +14,7 @@ MYSQL_PORT=3306
 MONGO_INITDB_ROOT_USERNAME=root
 MONGO_INITDB_ROOT_PASSWORD=secret
 MONGO_PORT=27017
+MONGO_URI=mongodb://root:secret@localhost:27017/Sensors?authSource=admin
 
 ### REDIS
 REDIS_PORT=6379
