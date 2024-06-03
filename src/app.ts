@@ -1,6 +1,7 @@
 import express from "express";
 import { dbSync, sequelize } from "./config/database";
 import { errorHandler } from "./middlewares/errorHandler";
+import bookingRoutes from "./routes/bookingRoutes";
 import propertiesRoutes from "./routes/propertiesRoutes";
 
 const app = express();
@@ -11,6 +12,7 @@ const main = async () => {
 
   app.use(express.json());
   app.use('/api', propertiesRoutes);
+  app.use('/api', bookingRoutes);
   app.use(errorHandler);
 
   app.listen(port, async () => {
