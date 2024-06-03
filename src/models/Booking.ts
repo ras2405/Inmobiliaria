@@ -8,7 +8,7 @@ export const Booking = sequelize.define('bookings', {
         primaryKey: true
     },
     document: {
-    type: DataTypes.STRING,
+        type: DataTypes.STRING,
         allowNull: false,
         validate: {
             is: {
@@ -72,7 +72,7 @@ export const Booking = sequelize.define('bookings', {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
-    minors: {
+    kids: {
         type: DataTypes.INTEGER,
         allowNull: false,
     },
