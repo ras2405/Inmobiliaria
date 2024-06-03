@@ -1,27 +1,37 @@
 import express from "express";
 import { dbSync, sequelize } from "./config/database";
 import { errorHandler } from "./middlewares/errorHandler";
-import propertiesRoutes from "./routes/propertiesRoutes";
+import router from "./routes";
 
 const app = express();
 const port = 3001;
-const main = async () => {
 
-  await dbSync();
+// Middlewares
+app.use(express.json());
+app.use('/api', router);
+app.use(errorHandler);
 
-  app.use(express.json());
-  app.use('/api', propertiesRoutes);
-  app.use(errorHandler);
-
-  app.listen(port, async () => {
-    console.log(`Server running on http://localhost:${port}`);
+// Database connection
+const connectDB = async () => {
     try {
-      await sequelize.authenticate();
-      console.log('La conexión con la base de datos ha sido establecida correctamente.');
-
+        await dbSync();
+        await sequelize.authenticate();
+        console.log('The connection to the database has been successfully established.');
     } catch (error) {
-      console.error('No se pudo conectar a la base de datos:', error);
+        console.error('Failed to connect to the database": ', error);
     }
-  });
 };
+
+// Server
+const startServer = async () => {
+    app.listen(port, () => {
+        console.log(`Server running on http://localhost:${port}`);
+    });
+};
+
+const main = async () => {
+    await connectDB();
+    await startServer();
+};
+
 main();
