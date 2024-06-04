@@ -24,6 +24,18 @@ export const createAvailability = async (availabilityDto: AvailabilityDto) => {
     }
 };
 
+export const deleteAvailability = async (id: number) => {
+    try {
+        const availability = await Availability.findByPk(id);
+
+        if (!availability) throw new NotFoundError("Availability not found");
+
+        await availability.destroy();
+    } catch (error) {
+        throw error;
+    }
+};
+
 const findExistingAvailabilities = async (availabilityDto: AvailabilityDto) => {
     const { propertyId, startDate, endDate } = availabilityDto;
     return await Availability.findAll({
