@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
+import { errorHandler } from '../../src/middlewares/errorHandler';
 import sensorsRoutes from './routes/sensorsRoutes';
 
 dotenv.config();
@@ -10,6 +11,7 @@ const port = 3001;
 
 app.use(express.json());
 app.use('/api', sensorsRoutes);
+app.use(errorHandler);
 
 const mongoUri = process.env.MONGO_URI as string;
 
