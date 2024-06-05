@@ -80,8 +80,8 @@ export const Booking = sequelize.define('bookings', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'Property', // El nombre del modelo al que se hace referencia
-            key: 'id'   // El nombre del atributo en el modelo de referencia
+            model: 'Property', 
+            key: 'id'
         },
         onUpdate: 'CASCADE'
     },
