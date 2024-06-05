@@ -10,9 +10,7 @@ export const findPropertyById = async (id: number) => {
 };
 
 export const createProperty = async (propertyDto: PropertyDto) => {
-    if (!propertyDto) throw Error("Dto vacío");
-    let property = { ...propertyDto };
-    return await Property.create(property);
+    return await Property.create(propertyDto);
 };
 
 export const updateProperty = async (id: number, propertyDto: PropertyDto) => {

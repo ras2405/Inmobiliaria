@@ -8,27 +8,27 @@ const sequelize = new Sequelize(process.env.MYSQL_DATABASE!, process.env.MYSQL_R
   dialect: process.env.MYSQL_DIALECT as 'mysql',
 });
 
+import { Availability } from '../models/Availability';
 import { Property } from '../models/Property';
 import { setRelationships } from '../models/relationships';
 import { User } from '../models/User';
 
-const syncTables = async () =>{
+const syncTables = async () => {
   try {
-    // Verifica si la sincronización está habilitada
-    if (process.env.MYSQL_SYNC === 'true') {      
+    if (process.env.MYSQL_SYNC === 'true') {
       // Cambia 'force' a true si quieres que se borren y recreen las tablas
-      await Property.sync();
+      await Property.sync({ force: false });
+      await Availability.sync({ force: false });
       await User.sync();
-      console.log('Los modelos fueron sincronizados con la base de datos.');
+      console.log('The models were synchronized with the database.');
     }
   } catch (error) {
-    console.error('Error al sincronizar los modelos con la base de datos:', error);
+    console.error('Error synchronizing the models with the database:', error);
   }
-}
+};
 const dbSync = async () => {
-  await setRelationships(); 
-  await syncTables();  
+  await setRelationships();
+  await syncTables();
 };
 
 export { dbSync, sequelize };
-
