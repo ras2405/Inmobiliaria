@@ -5,6 +5,6 @@ import { sensorSchema } from "../schemas/sensor";
 
 const router = Router();
 
-router.post('/sensors', validate(sensorSchema), sensorsController.createSensor);
+router.post('/', validate(sensorSchema), sensorsController.createSensor);
 
 export default router;
