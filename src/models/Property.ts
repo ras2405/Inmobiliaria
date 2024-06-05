@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/database';
 
-export const Property = sequelize.define('property', {
+export const Property = sequelize.define('Property', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -50,6 +50,6 @@ export const Property = sequelize.define('property', {
         type: DataTypes.STRING
     }
 }, {
-    tableName: 'Property',
+    tableName: 'Properties',
     timestamps: false
 });

@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-// import { getErrorMessage } from '../utils/handleError';
 import * as propertiesService from '../services/propertiesService';
 
 export const getProperties = async (req: Request, res: Response) => {
