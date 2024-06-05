@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
-import { errorHandler } from '../../src/middlewares/errorHandler';
+import { errorHandler } from './middlewares/errorHandler';
 import sensorsRoutes from './routes/sensorsRoutes';
 
 dotenv.config();
