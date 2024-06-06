@@ -1,6 +1,5 @@
 import { BookingDto as BookingDtoOut } from "../dtos/BookingDto";
 import { BadRequestError } from "../exceptions/BadRequestError";
-import { InternalServerError } from "../exceptions/InternalServerError";
 import { NotFoundError } from "../exceptions/NotFoundError";
 import { Booking } from "../models/Booking";
 import { BookingDto } from "../schemas/booking";
@@ -24,10 +23,8 @@ export const createBooking = async (bookingDto: BookingDto) : Promise<BookingDto
         let returnBooking = await Booking.create(bookingDto);
         if(returnBooking){
             notifyBookingToAdminAndOwner(bookingDto);
-            return new BookingDtoOut(returnBooking);
-        }else{
-            throw new InternalServerError("Booking could not be created");
         }
+        return new BookingDtoOut(returnBooking);
     }catch(error){
         throw error;
     }
