@@ -1,6 +1,6 @@
 import { ForeignKeyConstraintError, Op } from "sequelize";
 import { BadRequestError } from "../exceptions/BadRequestError";
-import { NotFoundError } from "../exceptions/NotFountError";
+import { NotFoundError } from "../exceptions/NotFoundError";
 import { Availability } from "../models/Availability";
 import { AvailabilityDto } from "../schemas/availability";
 
