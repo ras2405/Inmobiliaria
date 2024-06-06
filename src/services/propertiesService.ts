@@ -7,8 +7,7 @@ export const findAllProperties = async () => {
     return await Property.findAll();
 };
 
-export const findPropertyById = async (id: number): Promise<PropertyDtoOut | null> => {
-    
+export const findPropertyById = async (id: number):Promise<PropertyDtoOut | null>  => {
     const property = await Property.findByPk(id);
     if (property) {
         return new PropertyDtoOut(property);
