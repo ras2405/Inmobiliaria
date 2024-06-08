@@ -1,7 +1,32 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../config/database';
 
-export const Booking = sequelize.define('bookings', {
+interface BookingAttributes {
+    id?: number;
+    document: string;
+    documentType: string;
+    name: string;
+    surname: string;
+    mail: string;
+    phone: string;
+    country: string;
+    state: string;
+    status?: string;
+    adults: number;
+    kids: number;
+    propertyId: number;
+    startDate: Date;
+    endDate: Date;
+}
+
+interface BookingCreationAttributes extends Optional<BookingAttributes, 'id'> {
+    status?: string;
+}
+
+interface BookingInstance extends Model<BookingAttributes, BookingCreationAttributes>, BookingAttributes {}
+
+
+const Booking = sequelize.define<BookingInstance>('bookings', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -80,13 +105,13 @@ export const Booking = sequelize.define('bookings', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'Property', 
+            model: 'Properties', 
             key: 'id'
         },
         onUpdate: 'CASCADE'
     },
     startDate: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: false,
         validate: {
             isDate: {
@@ -96,7 +121,7 @@ export const Booking = sequelize.define('bookings', {
         }
     },
     endDate: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
         allowNull: false,
         validate: {
             isDate: {
@@ -110,4 +135,6 @@ export const Booking = sequelize.define('bookings', {
     tableName: 'Bookings',
     timestamps: false
 });
+
+export { Booking, BookingAttributes, BookingCreationAttributes, BookingInstance };
 

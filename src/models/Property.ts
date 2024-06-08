@@ -1,7 +1,33 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../config/database';
 
-export const Property = sequelize.define('Property', {
+// Define PropertyAttributes según el esquema zod
+interface PropertyAttributes {
+    id?: number;
+    name: string;
+    adults: number;
+    kids: number;
+    beds: number;
+    singleBeds: number;
+    ac: boolean;
+    wifi: boolean;
+    garage: boolean;
+    type: string;
+    beachDistance: number;
+    state: string;
+    balneario: string;
+    neighborhood: string;
+    pictures: string;
+}
+
+// Define PropertyCreationAttributes que extiende Optional para los atributos que son opcionales al crear una instancia
+interface PropertyCreationAttributes extends Optional<PropertyAttributes, 'id'> {}
+
+// Define la interfaz PropertyInstance que extiende Model
+interface PropertyInstance extends Model<PropertyAttributes, PropertyCreationAttributes>, PropertyAttributes {}
+
+// Define el modelo de forma funcional usando los tipos definidos
+const Property = sequelize.define<PropertyInstance>('Property', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -32,7 +58,7 @@ export const Property = sequelize.define('Property', {
         type: DataTypes.BOOLEAN
     },
     type: {
-        type: DataTypes.INTEGER
+        type: DataTypes.STRING
     },
     beachDistance: {
         type: DataTypes.INTEGER
@@ -53,3 +79,6 @@ export const Property = sequelize.define('Property', {
     tableName: 'Properties',
     timestamps: false
 });
+
+export { Property, PropertyAttributes, PropertyCreationAttributes, PropertyInstance };
+

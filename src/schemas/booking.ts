@@ -9,6 +9,7 @@ export const bookingSchema = z.object({
     phone: z.string().regex(/^[+]?[0-9\s-]{7,15}$/,'Phone must be 7 and 15 numbers long'),
     country: z.string(),
     state: z.string(),
+    status: z.enum(['En espera', 'Aceptado', 'Denegado']).optional(),
     adults: z.number(),
     kids: z.number(),
     propertyId: z.number().min(1, 'The id must be a positive number'),
