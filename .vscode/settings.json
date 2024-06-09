@@ -9,6 +9,6 @@
     "typescript.format.insertSpaceAfterSemicolonInForStatements": true,
     "typescript.format.insertSpaceBeforeAndAfterBinaryOperators": true,
     "editor.codeActionsOnSave": {
-        "source.organizeImports": "explicit"
+        "source.organizeImports": "true"
     }
 }
