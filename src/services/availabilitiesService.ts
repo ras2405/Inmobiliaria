@@ -64,11 +64,3 @@ const getOverlappingConditions = (startDate: Date, endDate: Date) => ({
         }
     ]
 });
-
-export const findPropertyAvailabilities = async (id:number) => {
-    return await Availability.findAll({
-        where: {
-            propertyId : id
-        }
-    });
-};
