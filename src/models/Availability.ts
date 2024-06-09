@@ -1,7 +1,18 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../config/database';
 
-export const Availability = sequelize.define('Availability', {
+interface AvailabilityAttributes {
+    id?: number;
+    propertyId:number
+    startDate:Date
+    endDate:Date
+}
+
+interface AvailabilityCreationAttributes extends Optional<AvailabilityAttributes, 'id'> {}
+
+interface AvailabilityInstance extends Model<AvailabilityAttributes, AvailabilityCreationAttributes>, AvailabilityAttributes {}
+
+const Availability = sequelize.define<AvailabilityInstance>('Availability', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -26,3 +37,6 @@ export const Availability = sequelize.define('Availability', {
     tableName: 'Availabilities',
     timestamps: false
 });
+
+export { Availability, AvailabilityAttributes, AvailabilityCreationAttributes, AvailabilityInstance };
+

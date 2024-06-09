@@ -8,10 +8,12 @@ const sequelize = new Sequelize(process.env.MYSQL_DATABASE!, process.env.MYSQL_R
   dialect: process.env.MYSQL_DIALECT as 'mysql',
 });
 
+
 import { Availability } from '../models/Availability';
+import { Booking } from '../models/Booking';
 import { Property } from '../models/Property';
-import { setRelationships } from '../models/relationships';
 import { User } from '../models/User';
+import { setRelationships } from '../models/relationships';
 
 const syncTables = async () => {
   try {
@@ -20,6 +22,7 @@ const syncTables = async () => {
       await Property.sync({ force: false });
       await Availability.sync({ force: false });
       await User.sync();
+      await Booking.sync();
       console.log('The models were synchronized with the database.');
     }
   } catch (error) {
@@ -32,3 +35,4 @@ const dbSync = async () => {
 };
 
 export { dbSync, sequelize };
+
