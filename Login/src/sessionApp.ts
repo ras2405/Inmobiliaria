@@ -1,5 +1,6 @@
 import express from "express";
 import { dbSync, sequelize } from "./config/database";
+import { errorHandler } from "./middlewares/errorHandler";
 import router from "./routes/";
 
 const app = express();
@@ -8,6 +9,7 @@ const port = 3003;
 // Middlewares
 app.use(express.json());
 app.use('/api', router);
+app.use(errorHandler);
 
 // Database connection
 const connectDB = async () => {

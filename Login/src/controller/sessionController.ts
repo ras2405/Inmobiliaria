@@ -9,7 +9,6 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
             data: session
         });
     } catch (error) {
-        console.log('error:', error);
         next(error);
     }
 };

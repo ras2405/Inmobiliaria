@@ -3,6 +3,6 @@ import sessionRoutes from './sessionRoutes';
 
 const router = Router();
 
-router.use('/saveUserData', sessionRoutes);
+router.use('/session', sessionRoutes);
 
 export default router;

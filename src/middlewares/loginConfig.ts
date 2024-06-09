@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import { NextFunction, Request, Response } from 'express';
+import { UnauthorizedError } from 'express-oauth2-jwt-bearer';
 import jwt from 'jsonwebtoken';
 
 interface CustomRequest extends Request {
@@ -7,7 +8,6 @@ interface CustomRequest extends Request {
 }
 
 export const secretKey = crypto.randomBytes(64).toString('hex');
-console.log("Generated Secret Key:", secretKey);
 
 export const authenticateToken = (req: CustomRequest, res: Response, next: NextFunction) => {
     const token = req.headers.authorization;
@@ -17,7 +17,7 @@ export const authenticateToken = (req: CustomRequest, res: Response, next: NextF
 
     jwt.verify(token, secretKey, (err, decoded: any) => { // SACAR ANY, POR AHORA NO SE PUEDE
         if (err) {
-            return res.status(403).send('Forbidden. Invalid token.');
+            throw new UnauthorizedError('Invalid token');
         }
         req.user = decoded.username;
         next();
