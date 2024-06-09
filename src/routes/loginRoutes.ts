@@ -1,10 +1,9 @@
 import { Router } from 'express';
 import * as loginController from '../controllers/loginController';
+import { authenticateToken } from '../middlewares/loginConfig';
 
 const router = Router();
 
-// si se agregan permisos:
-// const { requiredScopes } = require('express-oauth2-jwt-bearer');
-// const checkScopes = requiredScopes('read:messages');
+router.post('/', authenticateToken, loginController.login);
 
-router.get('/login', jwtCheck, loginController.login);
+export default router;

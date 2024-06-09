@@ -1,7 +1,7 @@
 version: "3.1"
 
 services:
-  mysql:
+  mysql-main:
     image: mysql:latest
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -9,7 +9,21 @@ services:
     ports:
       - "${MYSQL_PORT}:${MYSQL_PORT}"
     volumes:
-      - mysql-data:/var/lib/mysql
+      - mysql-main-data:/var/lib/mysql
+    networks:
+      - my-network
+
+  mysql-login:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: ${LOGIN_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${LOGIN_DATABASE}
+    ports:
+      - "${LOGIN_PORT}:${MYSQL_PORT}"
+    volumes:
+      - mysql-login-data:/var/lib/mysql
+    networks:
+      - my-network
 
   mongo:
     image: mongo:latest
@@ -20,6 +34,8 @@ services:
       - "${MONGO_PORT}:${MONGO_PORT}"
     volumes:
       - mongo-data:/data/db
+    networks:
+      - my-network
 
   redis:
     image: redis:latest
@@ -28,6 +44,8 @@ services:
       - "${REDIS_PORT}:${REDIS_PORT}"
     volumes:
       - redis-data:/data
+    networks:
+      - my-network
 
   rabbitmq:
     image: "rabbitmq:3-management"
@@ -40,11 +58,17 @@ services:
     volumes:
       - "rabbitmq_data:/var/lib/rabbitmq"
       - "rabbitmq_log:/var/log/rabbitmq"
+    networks:
+      - my-network
 
 volumes:
-  mysql-data:
+  mysql-main-data:
+  mysql-login-data:
   mongo-data:
-  es-data:
   redis-data:
   rabbitmq_data:
   rabbitmq_log:
+
+networks:
+  my-network:
+    driver: bridge

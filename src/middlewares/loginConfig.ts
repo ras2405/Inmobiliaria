@@ -1,11 +1,26 @@
-const express = require('express');
-const app = express();
-const { auth } = require('express-oauth2-jwt-bearer');
+import crypto from 'crypto';
+import { NextFunction, Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 
-const port = process.env.PORT || 8080;
+interface CustomRequest extends Request {
+    user?: string;
+}
 
-const jwtCheck = auth({
-    audience: 'https://localhost:3001/login',
-    issuerBaseURL: 'https://dev-uhvweesq2a7gcbbc.us.auth0.com/',
-    tokenSigningAlg: 'RS256'
-});
+export const secretKey = crypto.randomBytes(64).toString('hex');
+console.log("Generated Secret Key:", secretKey);
+
+export const authenticateToken = (req: CustomRequest, res: Response, next: NextFunction) => {
+    const token = req.headers.authorization;
+    if (!token) {
+        return res.status(401).send('Access denied. No token provided.');
+    }
+
+    jwt.verify(token, secretKey, (err, decoded: any) => { // SACAR ANY
+        if (err) {
+            return res.status(403).send('Forbidden. Invalid token.');
+        }
+        req.user = decoded.username;
+        next();
+    });
+};
+
