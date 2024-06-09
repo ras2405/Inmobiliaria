@@ -1,5 +1,7 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../config/database';
+import { AvailabilityInstance } from './Availability';
+import { BookingInstance } from './Booking';
 
 // Define PropertyAttributes según el esquema zod
 interface PropertyAttributes {
@@ -18,6 +20,8 @@ interface PropertyAttributes {
     balneario: string;
     neighborhood: string;
     pictures: string;
+    availabilities?: AvailabilityInstance[];
+    bookings?: BookingInstance[];
 }
 
 // Define PropertyCreationAttributes que extiende Optional para los atributos que son opcionales al crear una instancia
