@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import * as propertiesService from '../services/propertiesService';
+import { PropertyDto } from '../schemas/property';
 
 export const getProperties = async (req: Request, res: Response) => {
     try {
@@ -25,7 +26,13 @@ export const getProperty = async (req: Request, res: Response) => {
 
 export const createProperty = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const property = await propertiesService.createProperty(req.body);
+        const propertyDto: PropertyDto = req.body;
+        const files = req.files as Express.Multer.File[];
+
+        propertyDto.pictures = files.map(file => file.path);
+
+        const property = await propertiesService.createProperty(propertyDto);
+
         res.status(201).json({
             status: 'success',
             data: property

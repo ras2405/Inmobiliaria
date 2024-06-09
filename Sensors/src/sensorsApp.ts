@@ -7,7 +7,7 @@ import routes from './routes';
 dotenv.config();
 
 const app = express();
-const port = 3001;
+const port = 3002;
 
 app.use(express.json());
 app.use('/api', routes);
