@@ -75,7 +75,7 @@ const isBookingInAvailableDates = (booking:BookingDto,ranges:AvailabilityInstanc
     }
     
     cleanAvailabilityRanges.forEach((range) => {
-        let bookingIsIncludedInRange = ((booking.startDate >= range.startDate)
+        const bookingIsIncludedInRange = ((booking.startDate >= range.startDate)
                                     && (booking.endDate <= range.endDate));
         if(bookingIsIncludedInRange){
             available = true;
@@ -94,7 +94,7 @@ const isBookingInAvailableDates = (booking:BookingDto,ranges:AvailabilityInstanc
     }
 
     cleanBookingRanges.forEach((range) => {
-        let bookingIntersectsRange = ((booking.startDate <= range.startDate && booking.endDate >= range.startDate)
+        const bookingIntersectsRange = ((booking.startDate <= range.startDate && booking.endDate >= range.startDate)
                                     || (booking.startDate <= range.endDate && booking.endDate >= range.endDate)
                                     || (booking.startDate >= range.startDate && booking.endDate <= range.endDate)
                                     || (booking.startDate <= range.startDate && booking.endDate >= range.endDate));
