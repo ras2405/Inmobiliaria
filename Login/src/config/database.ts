@@ -10,22 +10,20 @@ const sequelize = new Sequelize(
     {
         host: process.env.LOGIN_HOST,
         dialect: 'mysql',
-        // port: parseInt(process.env.LOGIN_PORT!, 10),
+        port: parseInt(process.env.LOGIN_PORT!, 10),
     });
 
+console.log("el host", process.env.LOGIN_HOST);
+console.log("la db", process.env.LOGIN_DATABASE);
+console.log("el user", process.env.LOGIN_ROOT_USER);
+console.log("el pass", process.env.LOGIN_ROOT_PASSWORD);
+console.log("el port", process.env.LOGIN_PORT);
+
 import { Session } from '../model/Session';
-// import { Availability } from '../models/Availability';
-// import { Property } from '../models/Property';
-// import { setRelationships } from '../models/relationships';
-// import { User } from '../models/User';
 
 const syncTables = async () => {
     try {
         if (process.env.LOGIN_SYNC === 'true') {
-            // Cambia 'force' a true si quieres que se borren y recreen las tablas
-            //   await Property.sync({ force: false });
-            //   await Availability.sync({ force: false });
-            //   await User.sync();
             await Session.sync();
             console.log('The models were synchronized with the database.');
         }
@@ -34,7 +32,6 @@ const syncTables = async () => {
     }
 };
 const dbSync = async () => {
-    // await setRelationships();
     await syncTables();
 };
 

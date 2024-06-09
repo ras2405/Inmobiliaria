@@ -16,10 +16,11 @@ services:
   mysql-login:
     image: mysql:latest
     environment:
-      MYSQL_ROOT_PASSWORD: ${LOGIN_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${LOGIN_DATABASE}
+      MYSQL_ROOT_PASSWORD: secret #${LOGIN_ROOT_PASSWORD}
+      MYSQL_DATABASE: LoginDb #${LOGIN_DATABASE}
     ports:
-      - "${LOGIN_PORT}:${MYSQL_PORT}"
+      #- "${LOGIN_PORT}:${MYSQL_PORT}"
+      - "3307:3306"
     volumes:
       - mysql-login-data:/var/lib/mysql
     networks:
