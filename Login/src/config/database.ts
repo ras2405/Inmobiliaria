@@ -13,12 +13,6 @@ const sequelize = new Sequelize(
         port: parseInt(process.env.LOGIN_PORT!, 10),
     });
 
-console.log("el host", process.env.LOGIN_HOST);
-console.log("la db", process.env.LOGIN_DATABASE);
-console.log("el user", process.env.LOGIN_ROOT_USER);
-console.log("el pass", process.env.LOGIN_ROOT_PASSWORD);
-console.log("el port", process.env.LOGIN_PORT);
-
 import { Session } from '../model/Session';
 
 const syncTables = async () => {

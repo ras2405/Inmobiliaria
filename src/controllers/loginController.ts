@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { secretKey } from '../middlewares/loginConfig';
@@ -18,11 +19,11 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
         const token = jwt.sign({ mail }, secretKey, { expiresIn: '2h' });
 
         const returnedUser = {
-            email: mail,
-            token: token
+            mail: mail,
+            token: token,
         };
 
-        // aca mandar al LoginService para que se guarde en su propia db externa
+        await axios.post('http://localhost:3003/api/saveUserData', returnedUser);
 
         res.status(200).json({
             message: 'Login correcto',

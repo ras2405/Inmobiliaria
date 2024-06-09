@@ -1,6 +1,13 @@
+import express from "express";
 import { dbSync, sequelize } from "./config/database";
+import sessionRoutes from "./routes/sessionRoutes";
 
-const port = 3001;
+const app = express();
+const port = 3003;
+
+// Middlewares
+app.use(express.json());
+app.use('/api', sessionRoutes);
 
 // Database connection
 const connectDB = async () => {
@@ -13,8 +20,16 @@ const connectDB = async () => {
     }
 };
 
+// Server
+const startServer = async () => {
+    app.listen(port, () => {
+        console.log(`Server running on http://localhost:${port}`);
+    });
+};
+
 const main = async () => {
     await connectDB();
+    await startServer();
 };
 
 main();
