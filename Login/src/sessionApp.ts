@@ -1,13 +1,13 @@
 import express from "express";
 import { dbSync, sequelize } from "./config/database";
-import sessionRoutes from "./routes/sessionRoutes";
+import router from "./routes/";
 
 const app = express();
 const port = 3003;
 
 // Middlewares
 app.use(express.json());
-app.use('/api', sessionRoutes);
+app.use('/api', router);
 
 // Database connection
 const connectDB = async () => {

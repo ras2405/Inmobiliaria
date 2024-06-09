@@ -15,7 +15,7 @@ export const authenticateToken = (req: CustomRequest, res: Response, next: NextF
         return res.status(401).send('Access denied. No token provided.');
     }
 
-    jwt.verify(token, secretKey, (err, decoded: any) => { // SACAR ANY
+    jwt.verify(token, secretKey, (err, decoded: any) => { // SACAR ANY, POR AHORA NO SE PUEDE
         if (err) {
             return res.status(403).send('Forbidden. Invalid token.');
         }

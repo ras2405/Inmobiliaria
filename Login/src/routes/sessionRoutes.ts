@@ -3,6 +3,6 @@ import * as sessionController from '../controller/sessionController';
 
 const router = Router();
 
-router.post('/saveUserData', sessionController.login);
+router.post('/', sessionController.login);
 
 export default router;
