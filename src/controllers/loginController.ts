@@ -4,22 +4,21 @@ import { secretKey } from '../middlewares/loginConfig';
 import { User } from '../models/User';
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
-    const { currentMail, currentPassword } = req.body;
+    const { mail, password } = req.body;
     try {
         const user = await User.findOne({
             where: {
-                email: currentMail,
-                password: currentPassword
+                mail: mail,
+                password: password
             }
         });
 
-        const token = jwt.sign({ currentMail }, secretKey, { expiresIn: '2h' });
-        res.json({ token });
-
         if (!user) return res.status(400).json({ message: 'Mail o contraseña incorrectos' });
 
+        const token = jwt.sign({ mail }, secretKey, { expiresIn: '2h' });
+
         const returnedUser = {
-            email: currentMail,
+            email: mail,
             token: token
         };
 
@@ -30,6 +29,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
             data: returnedUser
         });
     } catch (error) {
+        console.log('error:', error);
         next(error);
     }
 };
