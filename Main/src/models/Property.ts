@@ -3,7 +3,6 @@ import { sequelize } from '../config/database';
 import { AvailabilityInstance } from './Availability';
 import { BookingInstance } from './Booking';
 
-// Define PropertyAttributes según el esquema zod
 interface PropertyAttributes {
     id?: number;
     name: string;
@@ -24,13 +23,10 @@ interface PropertyAttributes {
     bookings?: BookingInstance[];
 }
 
-// Define PropertyCreationAttributes que extiende Optional para los atributos que son opcionales al crear una instancia
-interface PropertyCreationAttributes extends Optional<PropertyAttributes, 'id'> {}
+interface PropertyCreationAttributes extends Optional<PropertyAttributes, 'id'> { }
 
-// Define la interfaz PropertyInstance que extiende Model
-interface PropertyInstance extends Model<PropertyAttributes, PropertyCreationAttributes>, PropertyAttributes {}
+interface PropertyInstance extends Model<PropertyAttributes, PropertyCreationAttributes>, PropertyAttributes { }
 
-// Define el modelo de forma funcional usando los tipos definidos
 const Property = sequelize.define<PropertyInstance>('Property', {
     id: {
         type: DataTypes.INTEGER,
@@ -77,7 +73,11 @@ const Property = sequelize.define<PropertyInstance>('Property', {
         type: DataTypes.STRING
     },
     pictures: {
-        type: DataTypes.STRING
+        type: DataTypes.TEXT('long'),
+        get() {
+            const picturesString = this.getDataValue('pictures');
+            return picturesString ? picturesString.split(',') : [];
+        },
     }
 }, {
     tableName: 'Properties',

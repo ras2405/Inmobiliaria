@@ -8,7 +8,11 @@ const port = 3001;
 
 // Middlewares
 app.use(express.json());
+
+app.use('/uploads', express.static('uploads'));
+
 app.use('/api', router);
+
 app.use(errorHandler);
 
 // Database connection
