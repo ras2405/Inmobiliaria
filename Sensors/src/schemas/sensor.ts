@@ -8,7 +8,9 @@ export const sensorSchema = z.object({
     address: z.string().max(1000, 'Address must be less than 1000 characters.'),
     date: z.string().date(),
     type: z.string(),
-    observableProperties: z.string()
+    observableProperties: z.array(
+        z.string().max(1000, 'Path must be less than 1000 characters.')
+    ).nonempty('There must be at least one observable property.')
 });
 
 export type SensorDto = z.infer<typeof sensorSchema>;
