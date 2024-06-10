@@ -1,4 +1,3 @@
-import { PropertyDto as PropertyDtoOut } from "../dtos/PropertyDto";
 import { Property, PropertyCreationAttributes } from "../models/Property";
 import { PropertyDto } from "../schemas/property";
 
@@ -19,9 +18,6 @@ export const createProperty = async (propertyDto: PropertyDto) => {
 
     const property = await Property.create(propertyData);
 
-    if (property) {
-        return new PropertyDtoOut(property);
-    }
     return property;
 };
 
