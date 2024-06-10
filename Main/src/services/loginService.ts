@@ -22,8 +22,8 @@ export const login = async (loginDto: LoginDto) => {
     const returnedUser = {
         mail: mail,
         token: token,
+        role: user.role
     };
-
     await axios.post('http://localhost:3003/api/session', returnedUser);
     return returnedUser;
 };
