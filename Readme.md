@@ -1,6 +1,12 @@
 Archivo .env
 
 ```
+### APP URLS
+APP_URL_MAIN=http://localhost:3001
+APP_URL_LOGIN=http://localhost:3002
+APP_URL_SENSOR=http://localhost:3003
+APP_URL_PAYMENT=http://localhost:3004
+
 ### MYSQL - Main
 MYSQL_DATABASE=MainDb
 MYSQL_ROOT_PASSWORD=secret

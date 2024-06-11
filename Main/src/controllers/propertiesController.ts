@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import * as propertiesService from '../services/propertiesService';
 import { PropertyDto } from '../schemas/property';
+import { PayDto } from '../schemas/pay';
 
 export const getProperties = async (req: Request, res: Response) => {
     try {
@@ -40,6 +41,25 @@ export const createProperty = async (req: Request, res: Response, next: NextFunc
     } catch (error) {
         next(error);
     }
+};
+
+export const initiatePayment = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const payDto: PayDto = req.body;
+        payDto.propertyId = parseInt(req.params.id);
+
+        await propertiesService.initiatePayment(payDto);
+
+        res.status(200).json({
+            message: 'Payment initiation successful'
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const paymentCallback = async (req: Request, res: Response) => {
+
 };
 
 export const updateProperty = async (req: Request, res: Response) => {

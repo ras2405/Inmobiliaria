@@ -21,6 +21,7 @@ interface PropertyAttributes {
     pictures: string;
     availabilities?: AvailabilityInstance[];
     bookings?: BookingInstance[];
+    status: string;
 }
 
 interface PropertyCreationAttributes extends Optional<PropertyAttributes, 'id'> { }
@@ -78,6 +79,9 @@ const Property = sequelize.define<PropertyInstance>('Property', {
             const picturesString = this.getDataValue('pictures');
             return picturesString ? picturesString.split(',') : [];
         },
+    },
+    status: {
+        type: DataTypes.STRING
     }
 }, {
     tableName: 'Properties',
