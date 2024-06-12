@@ -15,6 +15,6 @@ router.post(
     validateImages, validate(propertySchema),
     propertiesController.createProperty
 );
-router.put('/:id', propertiesController.updateProperty);
+router.put('/:id', propertiesController.assignSensor);
 
 export default router;

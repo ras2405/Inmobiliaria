@@ -56,3 +56,17 @@ export const updateProperty = async (req: Request, res: Response) => {
         res.status(400).json({ message: 'Error al actualizar la Propiedad', error: Error(error) });
     }
 };
+
+export const assignSensor = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { propertyId, sensorId } = req.body;
+        const propertySensor = await propertiesService.assignSensor(propertyId, sensorId);
+
+        res.status(200).json({
+            status: 'success',
+            data: propertySensor
+        });
+    } catch (error) {
+        next(error);
+    }
+};
