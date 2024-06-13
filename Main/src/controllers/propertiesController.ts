@@ -59,7 +59,8 @@ export const initiatePayment = async (req: Request, res: Response, next: NextFun
 };
 
 export const paymentCallback = async (req: Request, res: Response) => {
-
+    console.log('>>>>>>>>>>>>>>>> LLEGO', req.body);
+    res.status(200).json({ message: 'Callback received' });
 };
 
 export const updateProperty = async (req: Request, res: Response) => {

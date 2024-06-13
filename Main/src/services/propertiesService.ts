@@ -3,6 +3,7 @@ import { Property, PropertyCreationAttributes } from "../models/Property";
 import { PayDto } from "../schemas/pay";
 import { PropertyDto } from "../schemas/property";
 import { BadRequestError } from "../exceptions/BadRequestError";
+import { ServiceError } from "../exceptions/ServiceError";
 
 export const findAllProperties = async () => {
     return await Property.findAll();
@@ -32,15 +33,23 @@ export const initiatePayment = async (payDto: PayDto) => {
         }
 
         const paymentData = {
-            id: payDto.propertyId,
-            monto: payDto.amount,
-            tarjeta: payDto.cardNumber,
+            amount: payDto.amount,
+            cardNumber: payDto.cardNumber,
             callback: `${process.env.APP_URL_MAIN}/api/properties/${payDto.propertyId}/payment-callback`,
         };
 
-        await axios.post(`${process.env.APP_URL_PAYMENT}/api/process-payment`, paymentData);
+        axios.post(
+            `${process.env.APP_URL_PAYMENT}/api/payments`,
+            paymentData,
+            { headers: { 'Content-Type': 'application/json' } }
+        );
+
     } catch (error) {
-        throw new Error('Payment initiation failed');
+        if (axios.isAxiosError(error)) {
+            throw new ServiceError('Payment initiation failed');
+        } else {
+            throw error;
+        }
     }
 };
 

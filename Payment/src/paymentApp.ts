@@ -1,9 +1,13 @@
 import express from "express";
+import router from "./routes";
 
 const app = express();
 const port = 3004;
 
 // Middlewares
+app.use(express.json());
+
+app.use('/api', router);
 
 // Server
 const startServer = async () => {
