@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import * as propertiesService from '../services/propertiesService';
 import { PropertyDto } from '../schemas/property';
+import { PropertySensorDto, propertySensorSchema } from '../schemas/propertySensor';
 
 export const getProperties = async (req: Request, res: Response) => {
     try {
@@ -59,8 +60,10 @@ export const updateProperty = async (req: Request, res: Response) => {
 
 export const assignSensor = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { sensorId } = req.body;
-        const propertySensor = await propertiesService.assignSensor(parseInt(req.params.id), sensorId);
+        const propertyId = parseInt(req.params.id);
+        const propertySensorDto: PropertySensorDto = req.body;
+
+        const propertySensor = await propertiesService.assignSensor(propertyId, propertySensorDto);
 
         res.status(200).json({
             status: 'success',

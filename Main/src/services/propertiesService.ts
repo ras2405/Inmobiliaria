@@ -1,6 +1,7 @@
 import { Property, PropertyCreationAttributes } from "../models/Property";
 import { PropertySensor, PropertySensorCreationAttributes } from "../models/PropertySensor";
 import { PropertyDto } from "../schemas/property";
+import { PropertySensorDto } from "../schemas/propertySensor";
 
 
 export const findAllProperties = async () => {
@@ -31,11 +32,11 @@ export const updateProperty = async (id: number, propertyDto: PropertyDto) => {
     return await Property.update(propertyData, { where: { id } });
 };
 
-export const assignSensor = async (propertyId: number, sensorId: string) => {
+export const assignSensor = async (propertyId: number, propSensorDto: PropertySensorDto) => {
     const propertySensorData: PropertySensorCreationAttributes = {
         propertyId: propertyId,
-        sensorId: sensorId
+        sensorId: propSensorDto.sensorId
     };
-    const propertySensor = PropertySensor.create(propertySensorData);
+    const propertySensor = await PropertySensor.create(propertySensorData);
     return propertySensor;
 };

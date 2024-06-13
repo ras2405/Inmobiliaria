@@ -4,6 +4,7 @@ import { validate } from '../middlewares/validate';
 import { propertySchema } from '../schemas/property';
 import { upload } from '../middlewares/uploads';
 import { validateImages } from '../middlewares/validateImages';
+import { propertySensorSchema } from '../schemas/propertySensor';
 
 const router = Router();
 
@@ -15,6 +16,6 @@ router.post(
     validateImages, validate(propertySchema),
     propertiesController.createProperty
 );
-router.put('/:id', propertiesController.assignSensor);
+router.put('/:id', validate(propertySensorSchema), propertiesController.assignSensor);
 
 export default router;
