@@ -1,8 +1,9 @@
+import axios from "axios";
+import { BadRequestError } from "../exceptions/BadRequestError";
 import { Property, PropertyCreationAttributes } from "../models/Property";
 import { PropertySensor, PropertySensorCreationAttributes } from "../models/PropertySensor";
 import { PropertyDto } from "../schemas/property";
 import { PropertySensorDto } from "../schemas/propertySensor";
-
 
 export const findAllProperties = async () => {
     return await Property.findAll();
@@ -33,6 +34,12 @@ export const updateProperty = async (id: number, propertyDto: PropertyDto) => {
 };
 
 export const assignSensor = async (propertyId: number, propSensorDto: PropertySensorDto) => {
+    try {
+        await axios.get(`http://localhost:3002/api/sensors/${propSensorDto.sensorId}`);
+    } catch (error) {
+        throw new BadRequestError("Invalid Sensor, Sensor does not exist");
+    }
+
     const propertySensorData: PropertySensorCreationAttributes = {
         propertyId: propertyId,
         sensorId: propSensorDto.sensorId
