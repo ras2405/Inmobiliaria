@@ -23,7 +23,7 @@ export const createSensor = async (req: Request, res: Response, next: NextFuncti
     }
 };
 
-export const findSensorById = async (req: Request, res: Response, next: NextFunction) => {
+export const getSensor = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
         const sensor = await sensorsService.findSensorById(id);

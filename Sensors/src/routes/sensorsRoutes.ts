@@ -6,6 +6,6 @@ import { sensorSchema } from "../schemas/sensor";
 const router = Router();
 
 router.post('/', validate(sensorSchema), sensorsController.createSensor);
-router.get('/:id', sensorsController.findSensorById);
+router.get('/:id', sensorsController.getSensor);
 
 export default router;
