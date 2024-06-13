@@ -59,8 +59,8 @@ export const updateProperty = async (req: Request, res: Response) => {
 
 export const assignSensor = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { propertyId, sensorId } = req.body;
-        const propertySensor = await propertiesService.assignSensor(propertyId, sensorId);
+        const { sensorId } = req.body;
+        const propertySensor = await propertiesService.assignSensor(parseInt(req.params.id), sensorId);
 
         res.status(200).json({
             status: 'success',

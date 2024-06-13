@@ -19,7 +19,7 @@ const PropertySensor = sequelize.define<PropertySensorInstance>('PropertySensor'
         primaryKey: true
     }
 }, {
-    tableName: 'PropertieSensors',
+    tableName: 'PropertySensors',
     timestamps: false
 });
 
