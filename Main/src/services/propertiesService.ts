@@ -6,11 +6,19 @@ import { PropertyDto } from "../schemas/property";
 import { PropertySensorDto } from "../schemas/propertySensor";
 
 export const findAllProperties = async () => {
-    return await Property.findAll();
+    const properties = await Property.findAll();
+    if (!properties) {
+        throw new BadRequestError('No properties found');
+    }
+    return properties;
 };
 
 export const findPropertyById = async (id: number) => {
-    return await Property.findByPk(id);
+    const property = await Property.findByPk(id);
+    if (!property) {
+        throw new BadRequestError('Property not found');
+    }
+    return property;
 };
 
 export const createProperty = async (propertyDto: PropertyDto) => {
@@ -36,8 +44,9 @@ export const updateProperty = async (id: number, propertyDto: PropertyDto) => {
 export const assignSensor = async (propertyId: number, propSensorDto: PropertySensorDto) => {
     try {
         await axios.get(`http://localhost:3002/api/sensors/${propSensorDto.sensorId}`);
+        await findPropertyById(propertyId);
     } catch (error) {
-        throw new BadRequestError("Invalid Sensor, Sensor does not exist");
+        throw new BadRequestError('Invalid sensor or property id');
     }
 
     const propertySensorData: PropertySensorCreationAttributes = {
