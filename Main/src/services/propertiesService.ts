@@ -4,6 +4,7 @@ import { Property, PropertyCreationAttributes } from "../models/Property";
 import { PropertySensor, PropertySensorCreationAttributes } from "../models/PropertySensor";
 import { PropertyDto } from "../schemas/property";
 import { PropertySensorDto } from "../schemas/propertySensor";
+import { NotFoundError } from "../exceptions/NotFoundError";
 
 export const findAllProperties = async () => {
     return await Property.findAll();
@@ -12,7 +13,7 @@ export const findAllProperties = async () => {
 export const findPropertyById = async (id: number) => {
     const property = await Property.findByPk(id);
     if (!property) {
-        throw new BadRequestError('Property not found');
+        throw new NotFoundError('Property not found');
     }
     return property;
 };
