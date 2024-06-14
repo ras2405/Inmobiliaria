@@ -1,10 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import * as propertiesService from '../services/propertiesService';
 import { PropertyDto } from '../schemas/property';
+import { PropertyFilterDto } from '../schemas/propertyFilter';
 
 export const getProperties = async (req: Request, res: Response) => {
     try {
-        const properties = await propertiesService.findAllProperties();
+        const propertyFilterDto: PropertyFilterDto = req.body;
+        const properties = await propertiesService.findAllPropertiesFiltered(propertyFilterDto);
         res.status(200).json(properties);
     } catch (error: any) { // SACAR ANY
         res.status(400).json({ message: 'Error al obtener las Propiedades', error: Error(error) });
