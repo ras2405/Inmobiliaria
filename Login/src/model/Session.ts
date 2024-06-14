@@ -13,7 +13,11 @@ export const Session = sequelize.define('Session', {
     token: {
         type: DataTypes.STRING,
         allowNull: false
-    }
+    },
+    role: {
+        type: DataTypes.ENUM('Admin', 'Operator', 'Owner', 'Tenant'),
+        allowNull: false
+    },
 }, {
     tableName: 'Sessions',
     timestamps: false

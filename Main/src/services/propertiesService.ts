@@ -1,6 +1,10 @@
+import axios from "axios";
+import { BadRequestError } from "../exceptions/BadRequestError";
 import { Property, PropertyCreationAttributes, PropertyInstance } from "../models/Property";
+import { PropertySensor, PropertySensorCreationAttributes } from "../models/PropertySensor";
 import { PropertyDto } from "../schemas/property";
-import { PropertyFilterDto } from "../schemas/propertyFilter";
+import { PropertySensorDto } from "../schemas/propertySensor";
+import { NotFoundError } from "../exceptions/NotFoundError";import { PropertyFilterDto } from "../schemas/propertyFilter";
 import { Availability, AvailabilityInstance } from "../models/Availability";
 import { Booking, BookingInstance } from "../models/Booking";
 import { BadRequestError } from "../exceptions/BadRequestError";
@@ -40,7 +44,11 @@ export const findAllPropertiesFiltered = async (propertyFilter: PropertyFilterDt
 };
 
 export const findPropertyById = async (id: number) => {
-    return await Property.findByPk(id);
+    const property = await Property.findByPk(id);
+    if (!property) {
+        throw new NotFoundError('Property not found');
+    }
+    return property;
 };
 
 export const createProperty = async (propertyDto: PropertyDto) => {
@@ -61,6 +69,25 @@ export const updateProperty = async (id: number, propertyDto: PropertyDto) => {
     };
 
     return await Property.update(propertyData, { where: { id } });
+};
+
+export const assignSensor = async (propertyId: number, propSensorDto: PropertySensorDto) => {
+    try {
+        await axios.get(`http://localhost:3002/api/sensors/${propSensorDto.sensorId}`);
+        await findPropertyById(propertyId);
+    } catch (error) {
+        throw new BadRequestError('Invalid sensor or property id');
+    }
+
+    try {
+        const propertySensorData: PropertySensorCreationAttributes = {
+            propertyId: propertyId,
+            sensorId: propSensorDto.sensorId
+        };
+        await PropertySensor.create(propertySensorData);
+    } catch (error) {
+        throw new BadRequestError('Sensor already assigned to property');
+    }
 };
 
 function isWithinRange(ranges:AvailabilityInstance[],startDate:Date,endDate:Date){
