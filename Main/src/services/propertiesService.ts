@@ -6,11 +6,7 @@ import { PropertyDto } from "../schemas/property";
 import { PropertySensorDto } from "../schemas/propertySensor";
 
 export const findAllProperties = async () => {
-    const properties = await Property.findAll();
-    if (!properties) {
-        throw new BadRequestError('No properties found');
-    }
-    return properties;
+    return await Property.findAll();
 };
 
 export const findPropertyById = async (id: number) => {
@@ -49,10 +45,13 @@ export const assignSensor = async (propertyId: number, propSensorDto: PropertySe
         throw new BadRequestError('Invalid sensor or property id');
     }
 
-    const propertySensorData: PropertySensorCreationAttributes = {
-        propertyId: propertyId,
-        sensorId: propSensorDto.sensorId
-    };
-    const propertySensor = await PropertySensor.create(propertySensorData);
-    return propertySensor;
+    try {
+        const propertySensorData: PropertySensorCreationAttributes = {
+            propertyId: propertyId,
+            sensorId: propSensorDto.sensorId
+        };
+        await PropertySensor.create(propertySensorData);
+    } catch (error) {
+        throw new BadRequestError('Sensor already assigned to property');
+    }
 };
