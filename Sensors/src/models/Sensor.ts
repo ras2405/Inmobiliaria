@@ -8,15 +8,8 @@ const Sensor = new mongoose.Schema({
     address: { type: String, required: true, maxlength: 1000 },
     date: { type: Date, required: true },
     type: { type: String, required: true },
-    observableProperties: {
-        type: [{ type: String, maxlength: 1000 }],
-        validate: [arrayLimit, 'There must be at least one observable property.']
-    }
+    observableProperties: { type: String, required: true, maxlength: 1000 } // REVISAR
 });
-
-function arrayLimit(val: string[]) {
-    return val.length > 0;
-}
 
 const SensorModel = mongoose.model("Sensor", Sensor);
 export default SensorModel;

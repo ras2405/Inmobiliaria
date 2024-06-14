@@ -14,12 +14,14 @@ import { Booking } from '../models/Booking';
 import { Property } from '../models/Property';
 import { User } from '../models/User';
 import { setRelationships } from '../models/relationships';
+import { PropertySensor } from '../models/PropertySensor';
 
 const syncTables = async () => {
   try {
     if (process.env.MYSQL_SYNC === 'true') {
       // Cambia 'force' a true si quieres que se borren y recreen las tablas
       await Property.sync({ force: false });
+      await PropertySensor.sync({ force: false });
       await Availability.sync({ force: false });
       await User.sync();
       await Booking.sync();
