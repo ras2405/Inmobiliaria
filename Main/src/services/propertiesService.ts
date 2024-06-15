@@ -40,7 +40,7 @@ export const findAllPropertiesFiltered = async (propertyFilter: PropertyFilterDt
     if(parseDate(propertyFilter.startDate) > parseDate(propertyFilter.endDate)){
         throw new BadRequestError("Invalid date range");
     } 
-       
+
     properties = properties.filter(property => matchesFilter(property, propertyFilter));
 
     return properties;
@@ -177,74 +177,21 @@ return date;
 }
 
 function matchesFilter (property:PropertyInstance,filter:PropertyFilterDto):boolean{
-
-    if(filter.adults !== undefined){
-        if(property.adults < Number(filter.adults)){
-            return false;
-        }
-    }
-    if(filter.kids !== undefined){
-        if(property.kids < Number(filter.kids)){
-            return false;
-        }
-    }
-    if(filter.beds !== undefined){
-        if(property.beds < Number(filter.beds)){
-            return false;
-        }
-    }
-    if(filter.singleBeds !== undefined){
-        if(property.singleBeds < Number(filter.singleBeds)){
-            return false;
-        }
-    }
-    if(filter.ac !== undefined){
-        if(property.ac != parseBool(filter.ac)){
-            return false;
-        }
-    }
-    if(filter.wifi !== undefined){
-        if(property.wifi != parseBool(filter.wifi)){
-            return false;
-        }
-    }
-    if(filter.garage !== undefined){
-        if(property.garage != parseBool(filter.garage)){
-            return false;
-        }
-    }
-    if(filter.type !== undefined){
-        if(property.type != filter.type){
-            return false;
-        }
-    }
-    if(filter.beachDistance !== undefined){
-        if(property.beachDistance > Number(filter.beachDistance)){
-            return false;
-        }
-    }
-    if(filter.state !== undefined){
-        if(property.state != filter.state){
-            return false;
-        }
-    }
-    if(filter.balneario !== undefined){
-        if(property.balneario != filter.balneario){
-            return false;
-        }
-    }
-    if(filter.neighborhood !== undefined){
-        if(property.neighborhood != filter.neighborhood){
-            return false;
-        }
-    }
-    if(filter.startDate !== undefined && filter.endDate !== undefined){    
-        if(!isWithinRange(property.availabilities??[],filter.startDate,filter.endDate)){
-            return false;
-        }
-    }
-
-    return true;
+    return (
+        filterByLessThan(property.adults, filter.adults) &&
+        filterByLessThan(property.kids, filter.kids) &&
+        filterByLessThan(property.beds, filter.beds) &&
+        filterByLessThan(property.singleBeds, filter.singleBeds) &&
+        filterByBoolean(property.ac, filter.ac) &&
+        filterByBoolean(property.wifi, filter.wifi) &&
+        filterByBoolean(property.garage, filter.garage) &&
+        filterByString(property.type, filter.type) &&
+        filterByGreaterThan(property.beachDistance, filter.beachDistance) &&
+        filterByString(property.state, filter.state) &&
+        filterByString(property.balneario, filter.balneario) &&
+        filterByString(property.neighborhood, filter.neighborhood) &&
+        filterByDateRange(property.availabilities ?? [], filter.startDate, filter.endDate)
+    );
 }
 
 function parseDate(date:string|Date):Date{
@@ -267,3 +214,25 @@ function parseBool(value:string|boolean):boolean{
     return false;
 }
 
+function filterByBoolean(value1:boolean,filterValue?:boolean):boolean{
+    if(filterValue === undefined){return true}
+    return (value1 == filterValue);
+}
+
+function filterByString(value1:string,filterValue?:string):boolean{
+    if(filterValue === undefined){return true}
+    return (value1 == filterValue);
+}
+function filterByLessThan(value1:number,filterValue?:number):boolean{
+    if(filterValue === undefined){return true}
+    return (value1 < filterValue);
+}
+function filterByGreaterThan(value1:number,filterValue?:number):boolean{
+    if(filterValue === undefined){return true}
+    return (value1 > filterValue);
+}
+
+function filterByDateRange(ranges:AvailabilityInstance[],startDate?:Date,endDate?:Date):boolean{
+    if(startDate === undefined || endDate === undefined){return true}
+    return isWithinRange(ranges, startDate, endDate);
+}
