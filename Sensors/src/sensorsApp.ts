@@ -3,6 +3,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import { errorHandler } from './middlewares/errorHandler';
 import routes from './routes';
+import { loadRules } from './config/rules';
 
 dotenv.config();
 
@@ -13,21 +14,33 @@ app.use(express.json());
 app.use('/api', routes);
 app.use(errorHandler);
 
-const mongoUri = process.env.MONGO_URI as string;
+const connectMongo = async () => {
+    const mongoUri = process.env.MONGO_URI as string;
 
-if (!mongoUri) {
-    console.error("MongoDB URI is not defined in the environment variables");
-    process.exit(1);
-}
-console.log("Connecting to MongoDB with URI:", mongoUri);
-
-mongoose.connect(mongoUri)
-    .then(() => console.log("MongoDB connected"))
-    .catch(err => {
-        console.error("Failed to connect to MongoDB", err);
+    if (!mongoUri) {
+        console.error("MongoDB URI is not defined in the environment variables");
         process.exit(1);
-    });
+    }
+    console.log("Connecting to MongoDB with URI:", mongoUri);
 
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-});
+    mongoose.connect(mongoUri)
+        .then(() => console.log("MongoDB connected"))
+        .catch(err => {
+            console.error("Failed to connect to MongoDB", err);
+            process.exit(1);
+        });
+};
+
+const startServer = async () => {
+    app.listen(port, () => {
+        console.log(`Server is running on port ${port}`);
+    });
+};
+
+const main = async () => {
+    await connectMongo();
+    await startServer();
+    loadRules(); ////// REVISARRRRRRRRRRR
+};
+
+main();

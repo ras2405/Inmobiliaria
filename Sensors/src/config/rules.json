@@ -1,0 +1,75 @@
+{
+    "Humidity" : {
+        "Alert": "^(?:(2[0-9]|[01]?[0-9])$|(low)|(?:([3-5][0-9]|60)$|(normal)|(?:([6-9][1-9]|[1-9][0-9]|100)$|(high)))$"
+
+    },
+    "Temperature" : {
+        "Alert": "^(?:(?<cold>-?\\d|1[0-4])|(?<normal>1[5-9]|2[0-5])|(?<hot>2[6-9]|3[0-9]|4[0-9])|(?<extreme>[5-9]\\d|\\d{3,}))$"
+    },
+    "SoilMoisture" : {
+        "Alert": {
+            "High": 100,
+            "Low": 20
+        }
+    },
+    "WaterPressure" : {
+        "Alert": {
+            "High": 100,
+            "Low": 20
+        }
+    },
+    "Vibration" : {
+        "Alert": {
+            "High": 100,
+            "Low": 20
+        }
+    },
+    "Sound" : {
+        "Alert": {
+            "High": 100,
+            "Low": 20
+        }
+    },
+    "Smoke" : {
+        "Alert": {
+            "High": 100,
+            "Low": 20
+        }
+    },
+    "Gas" : {
+        "Alert": {
+            "High": 100,
+            "Low": 20
+        }
+    },
+    "Door" : {
+        "Alert": {
+            "High": 100,
+            "Low": 20
+        }
+    },
+    "Window" : {
+        "Alert": {
+            "High": 100,
+            "Low": 20
+        }
+    },
+    "Lock" : {
+        "Alert": {
+            "High": 100,
+            "Low": 20
+        }
+    },
+    "Power" : {
+        "Alert": {
+            "High": 100,
+            "Low": 20
+        }
+    },
+    "Energy" : {
+        "Alert": {
+            "High": 100,
+            "Low": 20
+        }
+    }
+}
