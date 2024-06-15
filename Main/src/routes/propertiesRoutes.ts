@@ -5,6 +5,7 @@ import { propertySchema } from '../schemas/property';
 import { upload } from '../middlewares/uploads';
 import { validateImages } from '../middlewares/validateImages';
 import { paySchema } from '../schemas/pay';
+import { paymentCallbackSchema } from '../schemas/paymentCallback';
 
 const router = Router();
 
@@ -18,7 +19,11 @@ router.post(
     propertiesController.createProperty
 );
 router.post('/:id/pay', validate(paySchema), propertiesController.initiatePayment);
-router.post('/:id/payment-callback', propertiesController.paymentCallback);
+router.put(
+    '/:id/payment-callback',
+    validate(paymentCallbackSchema),
+    propertiesController.paymentCallback
+);
 
 export default router;
 

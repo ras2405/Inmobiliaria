@@ -10,21 +10,21 @@ export const createPayment = async (paymentDto: PaymentDto) => {
 
     try {
         if (shouldFail) {
-            await axios.post(
+            await axios.put(
                 paymentDto.callback,
-                { error: 'Payment failed' },
+                { status: 'failure' },
                 { headers: { 'Content-Type': 'application/json' } }
             );
             console.info('Payment failed');
-            return { status: 'failed' };
+            return { status: 'failure' };
         } else {
-            await axios.post(
+            await axios.put(
                 paymentDto.callback,
-                { success: 'Payment successful' },
+                { status: 'success' },
                 { headers: { 'Content-Type': 'application/json' } }
             );
             console.info('Payment successful');
-            return { status: 'successful' };
+            return { status: 'success' };
         }
     } catch (error) {
         console.error('Error sending the request:', error);

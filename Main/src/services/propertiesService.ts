@@ -4,6 +4,7 @@ import { PayDto } from "../schemas/pay";
 import { PropertyDto } from "../schemas/property";
 import { BadRequestError } from "../exceptions/BadRequestError";
 import { ServiceError } from "../exceptions/ServiceError";
+import { PaymentCallbackDto } from "../schemas/paymentCallback";
 
 export const findAllProperties = async () => {
     return await Property.findAll();
@@ -31,6 +32,9 @@ export const initiatePayment = async (payDto: PayDto) => {
         if (!property) {
             throw new BadRequestError('Property not found');
         }
+        if (property.status !== 'pending payment') {
+            throw new BadRequestError('An active payment already exists');
+        }
 
         const paymentData = {
             amount: payDto.amount,
@@ -51,6 +55,17 @@ export const initiatePayment = async (payDto: PayDto) => {
             throw error;
         }
     }
+};
+
+export const paymentCallback = async (paymentCallbackDto: PaymentCallbackDto) => {
+    console.log(paymentCallbackDto.status);
+    if (paymentCallbackDto.status === 'success') {
+        return await Property.update(
+            { status: 'active' },
+            { where: { id: paymentCallbackDto.propertyId } }
+        );
+    }
+    return null;
 };
 
 export const updateProperty = async (id: number, propertyDto: PropertyDto) => {

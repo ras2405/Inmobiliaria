@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import * as propertiesService from '../services/propertiesService';
 import { PropertyDto } from '../schemas/property';
 import { PayDto } from '../schemas/pay';
+import { PaymentCallbackDto } from '../schemas/paymentCallback';
 
 export const getProperties = async (req: Request, res: Response) => {
     try {
@@ -58,9 +59,18 @@ export const initiatePayment = async (req: Request, res: Response, next: NextFun
     }
 };
 
-export const paymentCallback = async (req: Request, res: Response) => {
-    console.log('>>>>>>>>>>>>>>>> LLEGO', req.body);
-    res.status(200).json({ message: 'Callback received' });
+export const paymentCallback = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const paymentCallbackDto: PaymentCallbackDto = req.body;
+        paymentCallbackDto.propertyId = parseInt(req.params.id);
+
+        await propertiesService.paymentCallback(paymentCallbackDto);
+        res.status(200).json({
+            message: 'Callback received'
+        });
+    } catch (error) {
+        next(error);
+    }
 };
 
 export const updateProperty = async (req: Request, res: Response) => {
