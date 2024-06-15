@@ -1,20 +1,21 @@
 import axios from "axios";
-import { BadRequestError } from "../exceptions/BadRequestError";
 import { Property, PropertyCreationAttributes, PropertyInstance } from "../models/Property";
 import { PropertySensor, PropertySensorCreationAttributes } from "../models/PropertySensor";
 import { PropertyDto } from "../schemas/property";
 import { PropertySensorDto } from "../schemas/propertySensor";
-import { NotFoundError } from "../exceptions/NotFoundError";import { PropertyFilterDto } from "../schemas/propertyFilter";
+import { NotFoundError } from "../exceptions/NotFoundError";
+import { PropertyFilterDto } from "../schemas/propertyFilter";
 import { Availability, AvailabilityInstance } from "../models/Availability";
 import { Booking, BookingInstance } from "../models/Booking";
 import { BadRequestError } from "../exceptions/BadRequestError";
 import { format, toZonedTime } from 'date-fns-tz';
-import { NotFoundError } from "../exceptions/NotFoundError";
 import { parse } from "date-fns";
 
+export const findAllProperties = async () => {
+    return await Property.findAll();
+};
 
 export const findAllPropertiesFiltered = async (propertyFilter: PropertyFilterDto) => {
-
     let properties = await Property.findAll({
         include: [{
             model: Availability,
@@ -35,9 +36,11 @@ export const findAllPropertiesFiltered = async (propertyFilter: PropertyFilterDt
         propertyFilter.startDate = todayDate;
         propertyFilter.endDate = addDaysToDate(todayDate, 30);
     }
+
     if(parseDate(propertyFilter.startDate) > parseDate(propertyFilter.endDate)){
         throw new BadRequestError("Invalid date range");
-    }    
+    } 
+       
     properties = properties.filter(property => matchesFilter(property, propertyFilter));
 
     return properties;
@@ -111,6 +114,7 @@ function isWithinRange(ranges:AvailabilityInstance[],startDate:Date,endDate:Date
 
     return isInRange;
 }
+
 const joinAdyacentDateRanges = (ranges:AvailabilityInstance[]) => {
 
     let sortedRanges = sortDateRanges(ranges);
@@ -161,8 +165,6 @@ function addDaysToDate(date:Date, days:number):Date{
     return date1copy;
 }
 
-
-
 function getTodayDate():Date{
     
 const timeZone = 'America/Montevideo';
@@ -172,44 +174,42 @@ const formattedDate = format(zonedDate, 'yyyy-MM-dd', { timeZone });
 const date = parse(formattedDate, 'yyyy-MM-dd', new Date());
 
 return date;
-
 }
 
 function matchesFilter (property:PropertyInstance,filter:PropertyFilterDto):boolean{
 
     if(filter.adults !== undefined){
-        if(property.adults < filter.adults){
+        if(property.adults < Number(filter.adults)){
             return false;
         }
     }
     if(filter.kids !== undefined){
-        if(property.kids < filter.kids){
+        if(property.kids < Number(filter.kids)){
             return false;
         }
     }
     if(filter.beds !== undefined){
-        if(property.beds < filter.beds){
+        if(property.beds < Number(filter.beds)){
             return false;
         }
     }
     if(filter.singleBeds !== undefined){
-        if(property.singleBeds < filter.singleBeds){
+        if(property.singleBeds < Number(filter.singleBeds)){
             return false;
         }
     }
-    
     if(filter.ac !== undefined){
-        if(property.ac != filter.ac){
+        if(property.ac != parseBool(filter.ac)){
             return false;
         }
     }
     if(filter.wifi !== undefined){
-        if(property.wifi != filter.wifi){
+        if(property.wifi != parseBool(filter.wifi)){
             return false;
         }
     }
     if(filter.garage !== undefined){
-        if(property.garage != filter.garage){
+        if(property.garage != parseBool(filter.garage)){
             return false;
         }
     }
@@ -219,7 +219,7 @@ function matchesFilter (property:PropertyInstance,filter:PropertyFilterDto):bool
         }
     }
     if(filter.beachDistance !== undefined){
-        if(property.beachDistance > filter.beachDistance){
+        if(property.beachDistance > Number(filter.beachDistance)){
             return false;
         }
     }
@@ -251,3 +251,19 @@ function parseDate(date:string|Date):Date{
     const parsedDate = new Date(date);
     return parsedDate;
 }
+
+function parseBool(value:string|boolean):boolean{
+    if(typeof value === "string"){
+        if(value.toLocaleLowerCase() === "true"){
+            return true;
+        }
+        if(value.toLocaleLowerCase() === "false"){
+            return false;
+        } 
+    }
+    if(typeof value === "boolean"){
+        return value;
+    }  
+    return false;
+}
+

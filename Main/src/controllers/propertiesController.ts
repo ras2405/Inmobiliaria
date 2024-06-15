@@ -6,7 +6,7 @@ import { PropertySensorDto, propertySensorSchema } from '../schemas/propertySens
 
 export const getProperties = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const propertyFilterDto: PropertyFilterDto = req.body;
+        const propertyFilterDto: PropertyFilterDto = req.query;
         const properties = await propertiesService.findAllPropertiesFiltered(propertyFilterDto);
         res.status(200).json({
             status: 'success',
