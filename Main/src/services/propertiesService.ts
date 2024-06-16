@@ -216,7 +216,7 @@ function parseBool(value:string|boolean):boolean{
 
 function filterByBoolean(value1:boolean,filterValue?:boolean):boolean{
     if(filterValue === undefined){return true}
-    return (value1 == parseBool(filterValue));
+    return (value1 == filterValue);
 }
 
 function filterByString(value1:string,filterValue?:string):boolean{
@@ -225,11 +225,11 @@ function filterByString(value1:string,filterValue?:string):boolean{
 }
 function filterByLessThan(value1:number,filterValue?:number):boolean{
     if(filterValue === undefined){return true}
-    return (value1 < Number(filterValue));
+    return !(value1 < filterValue);
 }
 function filterByGreaterThan(value1:number,filterValue?:number):boolean{
     if(filterValue === undefined){return true}
-    return (value1 > Number(filterValue));
+    return !(value1 > filterValue);
 }
 
 function filterByDateRange(ranges:AvailabilityInstance[],startDate?:Date,endDate?:Date):boolean{

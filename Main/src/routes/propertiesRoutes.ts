@@ -5,10 +5,12 @@ import { propertySchema } from '../schemas/property';
 import { upload } from '../middlewares/uploads';
 import { validateImages } from '../middlewares/validateImages';
 import { propertySensorSchema } from '../schemas/propertySensor';
+import { propertyFilterSchema } from '../schemas/propertyFilter';
+import { validateParams } from '../middlewares/validateParams';
 
 const router = Router();
 
-router.get('/', propertiesController.getProperties);
+router.get('/', validateParams(propertyFilterSchema),propertiesController.getProperties);
 router.get('/:id', propertiesController.getProperty);
 router.post(
     '/',
