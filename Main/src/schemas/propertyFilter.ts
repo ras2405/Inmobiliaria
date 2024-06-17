@@ -1,6 +1,9 @@
 import { z } from 'zod';
 
 export const propertyFilterSchema = z.object({
+    page: z.string()
+        .transform((val) => parseInt(val))
+        .refine((val) => val >= 1, { message: 'The page number must be a positive number' }).optional(),
     adults: z.string()
         .transform((val) => parseInt(val))
         .refine((val) => val >= 1 && val <= 20, { message: 'There must be at least one adult and no more than 20 adults.' }).optional(),

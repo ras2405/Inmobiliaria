@@ -10,38 +10,67 @@ import { Booking, BookingInstance } from "../models/Booking";
 import { BadRequestError } from "../exceptions/BadRequestError";
 import { format, toZonedTime } from 'date-fns-tz';
 import { parse } from "date-fns";
+import { Op } from "sequelize";
 
 export const findAllProperties = async () => {
     return await Property.findAll();
 };
 
 export const findAllPropertiesFiltered = async (propertyFilter: PropertyFilterDto) => {
-    let properties = await Property.findAll({
-        include: [{
-            model: Availability,
-            as: 'availabilities'
-        },
-        {
-            model: Booking,
-            as: 'bookings',
-        }]
-    });
-
-    if(!properties){
-        throw new NotFoundError("No results found");
-    }
+    let rangeDateEntered = true;
+    const pageSize = 1;
+    if(propertyFilter.page === undefined){ propertyFilter.page = 1;}
 
     if((!propertyFilter.startDate || !propertyFilter.endDate)){
         const todayDate = getTodayDate();
         propertyFilter.startDate = todayDate;
         propertyFilter.endDate = addDaysToDate(todayDate, 30);
+        rangeDateEntered = false;
+    }
+
+    let properties = await Property.findAll({
+        limit: pageSize,
+        offset: (propertyFilter.page - 1) * pageSize,
+        include: [
+            {
+                
+                model: Availability,
+                as: 'availabilities',
+                attributes: ['startDate', 'endDate'],
+                where: {
+                    endDate: {
+                        [Op.gt]: propertyFilter.startDate
+                    }
+                },
+                required: false
+            },
+            {
+                model: Booking,
+                as: 'bookings',
+                attributes: ['startDate', 'endDate'],
+                where: {
+                    endDate: {
+                        [Op.gt]: propertyFilter.startDate
+                    }
+                },
+                required: false
+            }
+        ]
+    });
+    
+    if(!properties){
+        throw new NotFoundError("No results found");
     }
 
     if(parseDate(propertyFilter.startDate) > parseDate(propertyFilter.endDate)){
         throw new BadRequestError("Invalid date range");
     } 
 
-    properties = properties.filter(property => matchesFilter(property, propertyFilter));
+    if(rangeDateEntered){
+        properties = properties.filter(property => matchesFilter(property, propertyFilter, rangeDateEntered));
+    }else{
+
+    }
 
     return properties;
 };
@@ -93,7 +122,41 @@ export const assignSensor = async (propertyId: number, propSensorDto: PropertySe
     }
 };
 
-function isWithinRange(ranges:AvailabilityInstance[],startDate:Date,endDate:Date){
+function matchesFilter (property:PropertyInstance,filter:PropertyFilterDto, dateRangesEntered:boolean):boolean{
+    return (
+        filterByLessThan(property.adults, filter.adults) &&
+        filterByLessThan(property.kids, filter.kids) &&
+        filterByLessThan(property.beds, filter.beds) &&
+        filterByLessThan(property.singleBeds, filter.singleBeds) &&
+        filterByBoolean(property.ac, filter.ac) &&
+        filterByBoolean(property.wifi, filter.wifi) &&
+        filterByBoolean(property.garage, filter.garage) &&
+        filterByString(property.type, filter.type) &&
+        filterByGreaterThan(property.beachDistance, filter.beachDistance) &&
+        filterByString(property.state, filter.state) &&
+        filterByString(property.balneario, filter.balneario) &&
+        filterByString(property.neighborhood, filter.neighborhood) &&
+        (dateRangesEntered ? 
+            filterByDateRange(property, filter.startDate, filter.endDate)
+            : true)
+    );
+}
+
+function filterByDateRange(property:PropertyInstance,startDate?:Date,endDate?:Date):boolean{
+    if(startDate === undefined || endDate === undefined){return true}
+
+
+    const availabilities:AvailabilityInstance[] = property.availabilities ?? [];
+    let availabilitiesCopy:AvailabilityInstance[] = availabilities.map(result => result.toJSON());
+
+    const bookings:BookingInstance[] = property.bookings ?? [];
+    let bookingsCopy:BookingInstance[] = bookings.map(result => result.toJSON());
+    
+    return (isWithinAvailabilityRange(availabilitiesCopy, parseDate(startDate), parseDate(endDate))
+        && !intersectsWithBookings(bookingsCopy, parseDate(startDate), parseDate(endDate)));
+}
+
+function isWithinAvailabilityRange(ranges:AvailabilityInstance[],startDate:Date,endDate:Date){
     let isInRange = false; 
 
     let cleanAvailabilityRanges : AvailabilityInstance[];
@@ -102,7 +165,7 @@ function isWithinRange(ranges:AvailabilityInstance[],startDate:Date,endDate:Date
     }else{
         cleanAvailabilityRanges = ranges;
     }
-    
+
     cleanAvailabilityRanges.forEach((range) => {
         const isIncludedInRange = ((parseDate(startDate) >= parseDate(range.startDate))
                                         && (parseDate(endDate) <= parseDate(range.endDate)));
@@ -115,11 +178,32 @@ function isWithinRange(ranges:AvailabilityInstance[],startDate:Date,endDate:Date
     return isInRange;
 }
 
-const joinAdyacentDateRanges = (ranges:AvailabilityInstance[]) => {
+function intersectsWithBookings(ranges:BookingInstance[],startDate:Date,endDate:Date){
+    let intersects = false;
+    
+    let cleanBookingRanges;
+    if(ranges.length >= 2){
+        cleanBookingRanges = joinAdyacentDateRanges(ranges);
+    }else{
+        cleanBookingRanges = ranges;
+    }
 
+    cleanBookingRanges.forEach((bookingRange) => {
+        const bookingIntersectsRange = ((startDate <= parseDate(bookingRange.startDate) && endDate >= parseDate(bookingRange.startDate))
+                                    || (startDate <= parseDate(bookingRange.endDate) && endDate >= parseDate(bookingRange.endDate))
+                                    || (startDate >= parseDate(bookingRange.startDate) && endDate <= parseDate(bookingRange.endDate))
+                                    || (startDate <= parseDate(bookingRange.startDate) && endDate >= parseDate(bookingRange.endDate)));
+        if(bookingIntersectsRange){
+            intersects = true;
+        }    
+    });
+
+    return intersects;
+}
+
+const joinAdyacentDateRanges = (ranges:AvailabilityInstance[] | BookingInstance[]) => {
     let sortedRanges = sortDateRanges(ranges);
     let joinedRanges = [];
-
     for(let i = sortedRanges.length-1; i > 0; i-- ){
         if(isOneDayLater(sortedRanges[i-1].endDate, sortedRanges[i].startDate)){
             sortedRanges[i].startDate = sortedRanges[i-1].startDate;
@@ -129,11 +213,11 @@ const joinAdyacentDateRanges = (ranges:AvailabilityInstance[]) => {
         }
     } 
     joinedRanges.push(sortedRanges[0]);
-    
+
     return joinedRanges;
 } 
 
-const sortDateRanges = (ranges:AvailabilityInstance[]) => {
+const sortDateRanges = (ranges:AvailabilityInstance[] | BookingInstance[]) => {
     let swapped = true;
     while(swapped === true){
         swapped = false;
@@ -176,24 +260,6 @@ const date = parse(formattedDate, 'yyyy-MM-dd', new Date());
 return date;
 }
 
-function matchesFilter (property:PropertyInstance,filter:PropertyFilterDto):boolean{
-    return (
-        filterByLessThan(property.adults, filter.adults) &&
-        filterByLessThan(property.kids, filter.kids) &&
-        filterByLessThan(property.beds, filter.beds) &&
-        filterByLessThan(property.singleBeds, filter.singleBeds) &&
-        filterByBoolean(property.ac, filter.ac) &&
-        filterByBoolean(property.wifi, filter.wifi) &&
-        filterByBoolean(property.garage, filter.garage) &&
-        filterByString(property.type, filter.type) &&
-        filterByGreaterThan(property.beachDistance, filter.beachDistance) &&
-        filterByString(property.state, filter.state) &&
-        filterByString(property.balneario, filter.balneario) &&
-        filterByString(property.neighborhood, filter.neighborhood) &&
-        filterByDateRange(property.availabilities ?? [], filter.startDate, filter.endDate)
-    );
-}
-
 function parseDate(date:string|Date):Date{
     const parsedDate = new Date(date);
     return parsedDate;
@@ -230,9 +296,4 @@ function filterByLessThan(value1:number,filterValue?:number):boolean{
 function filterByGreaterThan(value1:number,filterValue?:number):boolean{
     if(filterValue === undefined){return true}
     return !(value1 > filterValue);
-}
-
-function filterByDateRange(ranges:AvailabilityInstance[],startDate?:Date,endDate?:Date):boolean{
-    if(startDate === undefined || endDate === undefined){return true}
-    return isWithinRange(ranges, parseDate(startDate), parseDate(endDate));
 }
