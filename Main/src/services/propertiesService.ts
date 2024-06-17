@@ -5,6 +5,7 @@ import { PropertyDto } from "../schemas/property";
 import { BadRequestError } from "../exceptions/BadRequestError";
 import { ServiceError } from "../exceptions/ServiceError";
 import { PaymentCallbackDto } from "../schemas/paymentCallback";
+import { PaymentStatus } from "../constants/payments";
 
 export const findAllProperties = async () => {
     return await Property.findAll();
@@ -18,7 +19,7 @@ export const createProperty = async (propertyDto: PropertyDto) => {
     const propertyData: PropertyCreationAttributes = {
         ...propertyDto,
         pictures: propertyDto.pictures.join(','),
-        status: 'pending payment'
+        status: PaymentStatus.PENDING
     };
 
     const property = await Property.create(propertyData);
@@ -32,8 +33,11 @@ export const initiatePayment = async (payDto: PayDto) => {
         if (!property) {
             throw new BadRequestError('Property not found');
         }
-        if (property.status !== 'pending payment') {
+        if (property.status === PaymentStatus.ACTIVE) {
             throw new BadRequestError('An active payment already exists');
+        }
+        if (property.status === PaymentStatus.CANCELLED) {
+            throw new BadRequestError('Cancelled due to non-payment');
         }
 
         const paymentData = {
@@ -58,10 +62,9 @@ export const initiatePayment = async (payDto: PayDto) => {
 };
 
 export const paymentCallback = async (paymentCallbackDto: PaymentCallbackDto) => {
-    console.log(paymentCallbackDto.status);
     if (paymentCallbackDto.status === 'success') {
         return await Property.update(
-            { status: 'active' },
+            { status: PaymentStatus.ACTIVE },
             { where: { id: paymentCallbackDto.propertyId } }
         );
     }
@@ -72,7 +75,7 @@ export const updateProperty = async (id: number, propertyDto: PropertyDto) => {
     const propertyData: PropertyCreationAttributes = {
         ...propertyDto,
         pictures: propertyDto.pictures.join(','),
-        status: 'active'
+        status: PaymentStatus.ACTIVE
     };
 
     return await Property.update(propertyData, { where: { id } });
