@@ -38,6 +38,7 @@ export const getSensor = async (req: Request, res: Response, next: NextFunction)
     }
 };
 
+// OLDD
 export const analyzeSensorValue = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id, value } = req.body;

@@ -3,7 +3,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import { errorHandler } from './middlewares/errorHandler';
 import routes from './routes';
-import { loadRules } from './config/rules';
+import { loadSensorData } from './config/sensorLoader';
 
 dotenv.config();
 
@@ -40,7 +40,7 @@ const startServer = async () => {
 const main = async () => {
     await connectMongo();
     await startServer();
-    loadRules(); ////// REVISARRRRRRRRRRR
+    // await loadSensorData('../sensors');
 };
 
 main();
