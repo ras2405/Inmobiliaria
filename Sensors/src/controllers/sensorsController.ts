@@ -22,3 +22,17 @@ export const createSensor = async (req: Request, res: Response, next: NextFuncti
         next(error);
     }
 };
+
+export const getSensor = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        const sensor = await sensorsService.findSensorById(id);
+
+        res.status(200).json({
+            status: 'success',
+            data: sensor
+        });
+    } catch (error) {
+        next(error);
+    }
+};

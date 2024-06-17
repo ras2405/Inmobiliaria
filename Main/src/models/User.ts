@@ -1,6 +1,22 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../config/database';
-export const User = sequelize.define('User', {
+
+interface UserAttributes {
+    id?: number;
+    document: string;
+    documentType: string;
+    name: string;
+    surname: string;
+    mail: string;
+    password: string;
+    phone: string;
+    role: string;
+}
+
+interface UserCreationAttributes extends Optional<UserAttributes, 'id'> { }
+interface UserInstance extends Model<UserAttributes, UserCreationAttributes>, UserAttributes { }
+
+const User = sequelize.define<UserInstance>('User', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -62,16 +78,9 @@ export const User = sequelize.define('User', {
         type: DataTypes.ENUM('Admin', 'Operator', 'Owner', 'Tenant'),
         allowNull: false
     }
-    /*Documento. Máximo de 30 chars dígitos, letras, guion y punto, otro carácter no es permitido.
-    • Tipo de Documento por ej. C.I/ DNI, etc.
-    • Nombre: texto mínimo de 3 y máximo de 30 chars.
-    • Apellido: texto mínimo de 3 y máximo de 30 chars.
-    • Email: único en el sistema validar con formato email.
-    • Número de teléfono: texto que valide el formato telefónico.
-    • Rol: Administrador/ Operario/ Propietario
-    */
 }, {
     tableName: 'Users',
     timestamps: false
 });
 
+export { User, UserAttributes, UserCreationAttributes, UserInstance };
