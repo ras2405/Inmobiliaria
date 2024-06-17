@@ -1,11 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 import * as propertiesService from '../services/propertiesService';
 import { PropertyDto } from '../schemas/property';
+import { PropertyFilterDto } from '../schemas/propertyFilter';
 import { PropertySensorDto, propertySensorSchema } from '../schemas/propertySensor';
 
 export const getProperties = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const properties = await propertiesService.findAllProperties();
+        const propertyFilterDto: PropertyFilterDto = req.query;
+        const properties = await propertiesService.findAllPropertiesFiltered(propertyFilterDto);
         res.status(200).json({
             status: 'success',
             data: properties
