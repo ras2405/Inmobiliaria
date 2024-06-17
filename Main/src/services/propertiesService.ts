@@ -40,6 +40,9 @@ export const findAllPropertiesFiltered = async (propertyFilter: PropertyFilterDt
                 where: {
                     endDate: {
                         [Op.gt]: propertyFilter.startDate
+                    },
+                    startDate:{
+                        [Op.lt]: propertyFilter.endDate
                     }
                 },
                 required: false
@@ -51,6 +54,9 @@ export const findAllPropertiesFiltered = async (propertyFilter: PropertyFilterDt
                 where: {
                     endDate: {
                         [Op.gt]: propertyFilter.startDate
+                    },
+                    startDate:{
+                        [Op.lt]: propertyFilter.endDate
                     }
                 },
                 required: false
@@ -68,8 +74,6 @@ export const findAllPropertiesFiltered = async (propertyFilter: PropertyFilterDt
 
     if(rangeDateEntered){
         properties = properties.filter(property => matchesFilter(property, propertyFilter, rangeDateEntered));
-    }else{
-
     }
 
     return properties;
