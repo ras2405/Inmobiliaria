@@ -18,7 +18,7 @@ export const findAllProperties = async () => {
 
 export const findAllPropertiesFiltered = async (propertyFilter: PropertyFilterDto) => {
     let rangeDateEntered = true;
-    const pageSize = 1;
+    const pageSize = 10;
     if(propertyFilter.page === undefined){ propertyFilter.page = 1;}
 
     if((!propertyFilter.startDate || !propertyFilter.endDate)){
