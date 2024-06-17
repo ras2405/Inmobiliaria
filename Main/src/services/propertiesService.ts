@@ -107,7 +107,7 @@ export const initiatePayment = async (payDto: PayDto) => {
     try {
         const property = await Property.findByPk(payDto.propertyId);
         if (!property) {
-            throw new BadRequestError('Property not found');
+            throw new NotFoundError('Property not found');
         }
         if (property.status === PaymentStatus.ACTIVE) {
             throw new BadRequestError('An active payment already exists');
