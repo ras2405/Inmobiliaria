@@ -3,6 +3,8 @@ import { dbSync, sequelize } from "./config/database";
 import { errorHandler } from "./middlewares/errorHandler";
 import router from "./routes";
 
+import "./crons/payments";
+
 const app = express();
 const port = 3001;
 
