@@ -1,7 +1,8 @@
 import dotenv from 'dotenv';
 import { Sequelize } from 'sequelize';
+import path from 'path';
 
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
 const sequelize = new Sequelize(
     process.env.LOGIN_DATABASE!,

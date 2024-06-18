@@ -1,11 +1,15 @@
 import { NextFunction, Request, Response } from 'express';
 import * as propertiesService from '../services/propertiesService';
 import { PropertyDto } from '../schemas/property';
+import { PayDto } from '../schemas/pay';
+import { PaymentCallbackDto } from '../schemas/paymentCallback';
+import { PropertyFilterDto } from '../schemas/propertyFilter';
 import { PropertySensorDto, propertySensorSchema } from '../schemas/propertySensor';
 
 export const getProperties = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const properties = await propertiesService.findAllProperties();
+        const propertyFilterDto: PropertyFilterDto = req.query;
+        const properties = await propertiesService.findAllPropertiesFiltered(propertyFilterDto);
         res.status(200).json({
             status: 'success',
             data: properties
@@ -39,6 +43,35 @@ export const createProperty = async (req: Request, res: Response, next: NextFunc
         res.status(201).json({
             status: 'success',
             data: property
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const initiatePayment = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const payDto: PayDto = req.body;
+        payDto.propertyId = parseInt(req.params.id);
+
+        await propertiesService.initiatePayment(payDto);
+
+        res.status(200).json({
+            message: 'Payment initiation successful'
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const paymentCallback = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const paymentCallbackDto: PaymentCallbackDto = req.body;
+        paymentCallbackDto.propertyId = parseInt(req.params.id);
+
+        await propertiesService.paymentCallback(paymentCallbackDto);
+        res.status(200).json({
+            message: 'Callback received'
         });
     } catch (error) {
         next(error);
