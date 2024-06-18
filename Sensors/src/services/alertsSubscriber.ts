@@ -3,14 +3,14 @@ import amqp, { Message } from 'amqplib';
 import dotenv from 'dotenv';
 
 const QUEUE = 'alerts';
+const MAX_PRIORITY = 10;
 dotenv.config();
 
-export const processAlerts = async () => { // REVISAR SI HACER FUNCION O NO 
+export const processAlerts = async () => {
     const connection = await amqp.connect(`amqp://${process.env.RABBITMQ_DEFAULT_USER}:${process.env.RABBITMQ_DEFAULT_PASS}@localhost`);
-    console.log(">>>>>>>>>>> CONECTADO A SUBSCRIBER");
     const channel = await connection.createChannel();
     try {
-        await channel.assertQueue(QUEUE, { durable: true });
+        await channel.assertQueue(QUEUE, { durable: true, maxPriority: MAX_PRIORITY });
 
         channel.consume(QUEUE, async (msg: Message | null) => {
             if (msg !== null) {
@@ -27,7 +27,5 @@ export const processAlerts = async () => { // REVISAR SI HACER FUNCION O NO
 
 export const sendAlert = async (alert: AlertDto) => {
     // enviar por mail
-    console.log(`Sending alert for sensor ${alert.id}: ${alert.measurement} value ${alert.value}`);
+    console.log(`Sending alert (mail) for sensor ${alert.id}: ${alert.message}`);
 };
-
-// processAlerts();

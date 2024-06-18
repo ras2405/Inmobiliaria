@@ -5,6 +5,7 @@ import { errorHandler } from './middlewares/errorHandler';
 import routes from './routes';
 import { processAlerts } from './services/alertsSubscriber';
 import { filesWatcher } from './config/sensorWatcher';
+import { publishAlerts } from './services/alertsPublisher';
 
 dotenv.config();
 
@@ -41,6 +42,7 @@ const startServer = async () => {
 const main = async () => {
     await connectMongo();
     await startServer();
+    await publishAlerts([]);
     await processAlerts();
     await filesWatcher();
     // await loadSensorData('../sensors');

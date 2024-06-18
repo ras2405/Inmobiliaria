@@ -2,7 +2,6 @@ import { Router } from "express";
 import * as sensorsController from "../controllers/sensorsController";
 import { validate } from "../middlewares/validate";
 import { sensorSchema } from "../schemas/sensor";
-import { sensorValueSchema } from "../schemas/sensorValue";
 
 const router = Router();
 
