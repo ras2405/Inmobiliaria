@@ -4,6 +4,9 @@ import { validate } from '../middlewares/validate';
 import { bookingSchema } from '../schemas/booking';
 import { paySchema } from '../schemas/pay';
 import { paymentCallbackSchema } from '../schemas/paymentCallback';
+import { validateParams } from '../middlewares/validateParams';
+import { bookingFilterSchema } from '../schemas/bookingFilter';
+
 const router = Router();
 
 router.post('/', validate(bookingSchema), bookingsController.createBooking);
@@ -13,5 +16,7 @@ router.put(
     validate(paymentCallbackSchema),
     bookingsController.paymentCallback
 );
+router.post('/', validate(bookingSchema), bookingsController.createBooking);
+router.get('/', validateParams(bookingFilterSchema), bookingsController.getBookings);
 
 export default router;

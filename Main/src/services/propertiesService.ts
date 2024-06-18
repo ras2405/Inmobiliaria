@@ -15,6 +15,7 @@ import { BadRequestError } from "../exceptions/BadRequestError";
 import { format, toZonedTime } from 'date-fns-tz';
 import { parse } from "date-fns";
 import { Op } from "sequelize";
+import { filterByBoolean, filterByString, filterByGreaterThan,filterByLessThan } from "../utils/filterFunctions";
 
 export const findAllProperties = async () => {
     return await Property.findAll();
@@ -321,22 +322,4 @@ function parseBool(value: string | boolean): boolean {
         return value;
     }
     return false;
-}
-
-function filterByBoolean(value1: boolean, filterValue?: boolean): boolean {
-    if (filterValue === undefined) { return true; }
-    return (value1 == filterValue);
-}
-
-function filterByString(value1: string, filterValue?: string): boolean {
-    if (filterValue === undefined) { return true; }
-    return (value1 == filterValue);
-}
-function filterByLessThan(value1: number, filterValue?: number): boolean {
-    if (filterValue === undefined) { return true; }
-    return !(value1 < filterValue);
-}
-function filterByGreaterThan(value1: number, filterValue?: number): boolean {
-    if (filterValue === undefined) { return true; }
-    return !(value1 > filterValue);
 }
