@@ -6,7 +6,7 @@ export const paySchema = z.object({
 });
 
 export const payWithIdSchema = paySchema.extend({
-    propertyId: z.number().positive(),
+    id: z.number().positive(),
 });
 
 export type PayDto = z.infer<typeof payWithIdSchema>;

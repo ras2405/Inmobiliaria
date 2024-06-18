@@ -22,7 +22,7 @@ interface PropertyAttributes {
     pictures: string;
     availabilities?: AvailabilityInstance[];
     bookings?: BookingInstance[];
-    status: PaymentStatus;
+    status?: PaymentStatus;
     createdAt?: Date;
 }
 
@@ -83,7 +83,8 @@ const Property = sequelize.define<PropertyInstance>('Property', {
         },
     },
     status: {
-        type: DataTypes.ENUM(...Object.values(PaymentStatus))
+        type: DataTypes.ENUM(...Object.values(PaymentStatus)),
+        defaultValue: PaymentStatus.ACTIVE
     },
     createdAt: {
         type: DataTypes.DATE,

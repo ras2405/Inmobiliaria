@@ -5,7 +5,7 @@ export const paymentCallbackSchema = z.object({
 });
 
 export const paymentCallbackWithIdSchema = paymentCallbackSchema.extend({
-    propertyId: z.number().positive(),
+    id: z.number().positive(),
 });
 
 export type PaymentCallbackDto = z.infer<typeof paymentCallbackWithIdSchema>;
