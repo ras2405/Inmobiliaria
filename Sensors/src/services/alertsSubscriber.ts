@@ -21,7 +21,7 @@ export const processAlerts = async () => {
         });
     } catch (error) {
         console.error(error);
-        channel.nack(error as Message, false, true); // REVISAR
+        channel.nack(error as Message, false, true);
     }
 };
 

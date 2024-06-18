@@ -45,7 +45,6 @@ const main = async () => {
     await publishAlerts([]);
     await processAlerts();
     await filesWatcher();
-    // await loadSensorData('../sensors');
 };
 
 main();

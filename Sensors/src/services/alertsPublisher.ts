@@ -8,7 +8,8 @@ const MAX_PRIORITY = 10;
 
 export const publishAlerts = async (alerts: AlertDto[]) => {
     try {
-        const connection = await amqp.connect(`amqp://${process.env.RABBITMQ_DEFAULT_USER}:${process.env.RABBITMQ_DEFAULT_PASS}@localhost`);
+        const connection = await amqp.connect(
+            `amqp://${process.env.RABBITMQ_DEFAULT_USER}:${process.env.RABBITMQ_DEFAULT_PASS}@localhost`);
         const channel = await connection.createChannel();
         await channel.assertQueue(QUEUE, { durable: true, maxPriority: MAX_PRIORITY });
 
