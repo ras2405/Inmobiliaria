@@ -2,6 +2,7 @@ import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../config/database';
 import { AvailabilityInstance } from './Availability';
 import { BookingInstance } from './Booking';
+import { PaymentStatus } from '../constants/payments';
 
 interface PropertyAttributes {
     id?: number;
@@ -21,6 +22,8 @@ interface PropertyAttributes {
     pictures: string;
     availabilities?: AvailabilityInstance[];
     bookings?: BookingInstance[];
+    status: PaymentStatus;
+    createdAt?: Date;
 }
 
 interface PropertyCreationAttributes extends Optional<PropertyAttributes, 'id'> { }
@@ -78,6 +81,14 @@ const Property = sequelize.define<PropertyInstance>('Property', {
             const picturesString = this.getDataValue('pictures');
             return picturesString ? picturesString.split(',') : [];
         },
+    },
+    status: {
+        type: DataTypes.ENUM(...Object.values(PaymentStatus))
+    },
+    createdAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+        allowNull: false
     }
 }, {
     tableName: 'Properties',
@@ -85,4 +96,3 @@ const Property = sequelize.define<PropertyInstance>('Property', {
 });
 
 export { Property, PropertyAttributes, PropertyCreationAttributes, PropertyInstance };
-

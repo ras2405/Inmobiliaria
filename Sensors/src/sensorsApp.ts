@@ -6,8 +6,9 @@ import routes from './routes';
 import { processAlerts } from './services/alertsSubscriber';
 import { filesWatcher } from './config/sensorWatcher';
 import { publishAlerts } from './services/alertsPublisher';
+import path from 'path';
 
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 const app = express();
 const port = 3002;
