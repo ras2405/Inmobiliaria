@@ -1,9 +1,12 @@
+import { Op } from "sequelize";
 import { BadRequestError } from "../exceptions/BadRequestError";
 import { NotFoundError } from "../exceptions/NotFoundError";
 import { Availability, AvailabilityInstance } from "../models/Availability";
 import { Booking, BookingInstance } from "../models/Booking";
 import { Property } from "../models/Property";
 import { BookingDto } from "../schemas/booking";
+import { BookingFilterDto } from "../schemas/bookingFilter";
+import { filterByString, filterByDifferentNumber } from "../utils/filterFunctions";
 
 export const createBooking = async (bookingDto: BookingDto) => {
 
@@ -53,7 +56,7 @@ export const updateBookingStatus = async (id: number, bookingDto: BookingDto) =>
 
 const notifyBookingToAdminAndOwner = async (bookingDto: BookingDto) => {
     console.log("Notificar a Admin y a Owner");
-}
+};
 
 export const findPropertyBookings = async (id:number) => {
     return await Booking.findAll({
@@ -63,6 +66,17 @@ export const findPropertyBookings = async (id:number) => {
     });
 };
 
+export const getBookingsAsAdminOperator = async (bookingFilterDto:BookingFilterDto) => {
+    let bookings = await getBookingsFilteredByRange(bookingFilterDto);
+   
+    if(!bookings){
+        throw new NotFoundError("No properties were found");
+    }
+
+    bookings = bookings.filter(booking => matchesFilter(booking, bookingFilterDto));
+    
+    return bookings;
+};
 
 const isBookingInAvailableDates = (booking:BookingDto,ranges:AvailabilityInstance[],existingBookings:BookingInstance[]) => {
     let available = false;
@@ -150,4 +164,60 @@ function isOneDayLater(date1: Date, date2: Date): boolean {
     return date1copy.toDateString() === date2copy.toDateString();
 }
 
+const getBookingsFilteredByRange = async (filter:BookingFilterDto) : Promise<BookingInstance[]> => {
+    let properties;
+
+    if(!filter.startDate && !filter.endDate){
+        properties = await Booking.findAll();
+
+    }else if(filter.startDate && !filter.endDate){
+        properties = await Booking.findAll({
+            where: {
+                endDate: {
+                    [Op.gte]: filter.startDate
+                }
+            }
+    
+        });
+    }else if(!filter.startDate && filter.endDate){
+        properties = await Booking.findAll({
+            where: {
+                startDate:{
+                    [Op.lte]: filter.endDate
+                }
+            }
+    
+        });
+    }else if(filter.startDate && filter.endDate){
+        if(filter.startDate > filter.endDate){
+            throw new BadRequestError("Date range selected is invalid");
+        }
+
+        properties = await Booking.findAll({
+            where: {
+                endDate: {
+                    [Op.gte]: filter.startDate
+                },
+                startDate:{
+                    [Op.lte]: filter.endDate
+                }
+            }
+    
+        });
+    }else{
+        throw new BadRequestError("Date range selected is invalid");
+    }
+
+    return await properties;
+}
+
+function matchesFilter (booking:BookingInstance,filter:BookingFilterDto):boolean{
+    return(
+        filterByDifferentNumber(booking.propertyId,filter.propertyId) &&
+        filterByString(booking.mail, filter.mail) &&
+        filterByString(booking.name, filter.name) &&
+        filterByString(booking.surname, filter.surname) &&
+        filterByString(booking.status, filter.status)
+    );
+}
 
