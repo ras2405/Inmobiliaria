@@ -5,6 +5,8 @@ import { SensorValueDto } from "../schemas/sensorValue";
 import { findSensorReturnPath } from "./sensorsService";
 import { sensorData } from "../config/sensorLoader";
 
+// REVISAR TODO ESTE FILE
+
 type SensorKeys = Exclude<keyof SensorValueDto, 'id'>;
 
 export const checkAlerts = async (sensor: SensorValueDto) => {
@@ -16,10 +18,12 @@ export const checkAlerts = async (sensor: SensorValueDto) => {
 
             if (sensorData && typeof sensorData === 'object' && 'Alerta' in sensorData) {
                 const value = (sensorData as AlertDto).value;
-                // const alertRegex = new RegExp((sensorData as AlertDto).Alert);
+                // const alertRegex = new RegExp((sensorData as AlertDto).Alert); // OLD
 
                 getRegex(measurement).then(alertRegex => {
                     if (alertRegex.test(value)) {
+                        // hacer un !alertRegex.test(value) para que sea alerta si si entra en rango aceptado maybe??
+                        // si es que no termino usando el regex mega complejo que hice
                         getPriority(measurement).then(priority => {
                             alerts.push({
                                 id: sensor.id,
@@ -28,6 +32,8 @@ export const checkAlerts = async (sensor: SensorValueDto) => {
                                 priority: priority
                             });
                         });
+                    } else {
+                        console.log('No hay alerta'); // REVISAR EN QUE CASO SERIA ERROR
                     }
                 });
             }
@@ -36,7 +42,7 @@ export const checkAlerts = async (sensor: SensorValueDto) => {
     return alerts;
 };
 
-export const getPriority = async (measurement: string) => {
+export const getPriority = async (measurement: string) => { // en file aparte??
     const priorityMap: { [key: string]: number; } = {
         'Temperatura': 1,
         'HumedadAmbiente': 2,
@@ -44,7 +50,7 @@ export const getPriority = async (measurement: string) => {
     return (priorityMap[measurement] as number) || 5;
 };
 
-export const getRegex = async (measurement: string) => {
+export const getRegex = async (measurement: string) => { // en file aparte??
     const rules: { [key: string]: string; } = {
         'Temperatura': '^[0-9]{2}$',
         'HumedadAmbiente': '^[0-9]{2}$',
@@ -52,7 +58,7 @@ export const getRegex = async (measurement: string) => {
     return new RegExp(rules[measurement]);
 };
 
-// export const getRulesPath = async (sensorId: string) => {
+// export const getRulesPath = async (sensorId: string) => { // seguramente sacar
 //     const sensorPath = await findSensorReturnPath(sensorId);
 //     const SENSORS_FOLDER_PATH = path.resolve(__dirname, '../config');
 //     const rulesPath = path.resolve(SENSORS_FOLDER_PATH, sensorPath);

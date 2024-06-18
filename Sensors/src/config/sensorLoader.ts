@@ -10,4 +10,4 @@ export const loadSensorData = async (dir: string) => {
     });
 };
 
-export const sensorData = loadSensorData('../sensors');
+export const sensorData = loadSensorData('../sensors');// REVISAR DONDE SE TENDRIA QUE LLAMAR

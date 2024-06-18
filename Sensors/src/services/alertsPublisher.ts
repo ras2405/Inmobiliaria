@@ -7,12 +7,13 @@ const QUEUE = 'alerts';
 const MAX_PRIORITY = 10;
 
 export const publishAlerts = async (alerts: AlertDto[]) => {
-    const connection = await amqp.connect('amqp://localhost');
+    const connection = await amqp.connect(`amqp://${process.env.RABBITMQ_DEFAULT_USER}:${process.env.RABBITMQ_DEFAULT_PASS}@localhost`);
+    console.log(">>>>>>>>>>> CONECTADO A PUBLISHER");
     const channel = await connection.createChannel();
     await channel.assertQueue(QUEUE, { durable: true, maxPriority: MAX_PRIORITY });
 
     alerts.forEach(alert => {
-        channel.sendToQueue(QUEUE, Buffer.from(JSON.stringify(alert)), { priority: alert.priority });
+        channel.sendToQueue(QUEUE, Buffer.from(JSON.stringify(alert)), { priority: alert.priority, persistent: true });
     });
 
     setTimeout(() => {
@@ -20,4 +21,4 @@ export const publishAlerts = async (alerts: AlertDto[]) => {
     }, 500);
 };
 
-// publishAlerts(alerts); // IMPORTANTE QUE ANDE
+// publishAlerts(alerts); // IMPORTANTE QUE ANDE - se manda desde sensorwatcher tho

@@ -3,7 +3,8 @@ import express from 'express';
 import mongoose from 'mongoose';
 import { errorHandler } from './middlewares/errorHandler';
 import routes from './routes';
-import { loadSensorData } from './config/sensorLoader';
+import { processAlerts } from './services/alertsSubscriber';
+import { filesWatcher } from './config/sensorWatcher';
 
 dotenv.config();
 
@@ -40,6 +41,8 @@ const startServer = async () => {
 const main = async () => {
     await connectMongo();
     await startServer();
+    await processAlerts();
+    await filesWatcher();
     // await loadSensorData('../sensors');
 };
 
