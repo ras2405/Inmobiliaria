@@ -6,5 +6,6 @@ import { sessionSchema } from '../schema/session';
 const router = Router();
 
 router.post('/', validate(sessionSchema), sessionController.login);
+router.get('/:token', sessionController.getSession);
 
 export default router;
