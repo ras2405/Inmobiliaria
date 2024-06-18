@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { NextFunction, Request, Response } from 'express';
-import { UnauthorizedError } from 'express-oauth2-jwt-bearer';
+import { UnauthorizedError } from '../exceptions/UnauthorizedError';
 import jwt from 'jsonwebtoken';
 
 export interface CustomRequest extends Request {
@@ -22,12 +22,10 @@ export const authenticateToken = async (req: CustomRequest, res: Response, next:
                     return next(new UnauthorizedError('Invalid token'));
                 } else {
                     req.user = decoded?.mail;
-                    console.log("Token decoded:", decoded);
 
                     try {
                         const userRole = await authenticateSession(token, req.user?.toString(), next);
                         if (userRole !== role) {
-                            console.log('Role mismatch:', userRole, '!=', role);
                             return next(new UnauthorizedError('Invalid role. You do not have permission to access this resource.'));
                         }
                         next();
@@ -47,7 +45,6 @@ export const authenticateSession = async (auth: string | undefined, mail: string
     if (session.data.data.mail as string != mail) {
         return next(new UnauthorizedError('Invalid session token. Please log in again.'));
     } else {
-        console.log("Session data:", session.data);
         return session.data.data.role;
     }
 };
