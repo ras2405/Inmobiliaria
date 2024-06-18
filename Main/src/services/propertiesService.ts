@@ -1,7 +1,11 @@
 import axios from "axios";
+import { PayDto } from "../schemas/pay";
+import { PropertyDto } from "../schemas/property";
+import { ServiceError } from "../exceptions/ServiceError";
+import { PaymentCallbackDto } from "../schemas/paymentCallback";
+import { PaymentStatus } from "../constants/payments";
 import { Property, PropertyCreationAttributes, PropertyInstance } from "../models/Property";
 import { PropertySensor, PropertySensorCreationAttributes } from "../models/PropertySensor";
-import { PropertyDto } from "../schemas/property";
 import { PropertySensorDto } from "../schemas/propertySensor";
 import { NotFoundError } from "../exceptions/NotFoundError";
 import { PropertyFilterDto } from "../schemas/propertyFilter";
@@ -20,9 +24,9 @@ export const findAllProperties = async () => {
 export const findAllPropertiesFiltered = async (propertyFilter: PropertyFilterDto) => {
     let rangeDateEntered = true;
     const pageSize = 10;
-    if(propertyFilter.page === undefined){ propertyFilter.page = 1;}
+    if (propertyFilter.page === undefined) { propertyFilter.page = 1; }
 
-    if((!propertyFilter.startDate || !propertyFilter.endDate)){
+    if ((!propertyFilter.startDate || !propertyFilter.endDate)) {
         const todayDate = getTodayDate();
         propertyFilter.startDate = todayDate;
         propertyFilter.endDate = addDaysToDate(todayDate, 30);
@@ -34,7 +38,7 @@ export const findAllPropertiesFiltered = async (propertyFilter: PropertyFilterDt
         offset: (propertyFilter.page - 1) * pageSize,
         include: [
             {
-                
+
                 model: Availability,
                 as: 'availabilities',
                 attributes: ['startDate', 'endDate'],
@@ -42,7 +46,7 @@ export const findAllPropertiesFiltered = async (propertyFilter: PropertyFilterDt
                     endDate: {
                         [Op.gt]: propertyFilter.startDate
                     },
-                    startDate:{
+                    startDate: {
                         [Op.lt]: propertyFilter.endDate
                     }
                 },
@@ -56,7 +60,7 @@ export const findAllPropertiesFiltered = async (propertyFilter: PropertyFilterDt
                     endDate: {
                         [Op.gt]: propertyFilter.startDate
                     },
-                    startDate:{
+                    startDate: {
                         [Op.lt]: propertyFilter.endDate
                     }
                 },
@@ -64,16 +68,16 @@ export const findAllPropertiesFiltered = async (propertyFilter: PropertyFilterDt
             }
         ]
     });
-    
-    if(!properties){
+
+    if (!properties) {
         throw new NotFoundError("No results found");
     }
 
-    if(parseDate(propertyFilter.startDate) > parseDate(propertyFilter.endDate)){
+    if (parseDate(propertyFilter.startDate) > parseDate(propertyFilter.endDate)) {
         throw new BadRequestError("Invalid date range");
-    } 
+    }
 
-    if(rangeDateEntered){
+    if (rangeDateEntered) {
         properties = properties.filter(property => matchesFilter(property, propertyFilter, rangeDateEntered));
     }
 
@@ -91,7 +95,8 @@ export const findPropertyById = async (id: number) => {
 export const createProperty = async (propertyDto: PropertyDto) => {
     const propertyData: PropertyCreationAttributes = {
         ...propertyDto,
-        pictures: propertyDto.pictures.join(',')
+        pictures: propertyDto.pictures.join(','),
+        status: PaymentStatus.PENDING
     };
 
     const property = await Property.create(propertyData);
@@ -99,10 +104,55 @@ export const createProperty = async (propertyDto: PropertyDto) => {
     return property;
 };
 
+export const initiatePayment = async (payDto: PayDto) => {
+    try {
+        const property = await Property.findByPk(payDto.propertyId);
+        if (!property) {
+            throw new NotFoundError('Property not found');
+        }
+        if (property.status === PaymentStatus.ACTIVE) {
+            throw new BadRequestError('An active payment already exists');
+        }
+        if (property.status === PaymentStatus.CANCELLED) {
+            throw new BadRequestError('Cancelled due to non-payment');
+        }
+
+        const paymentData = {
+            amount: payDto.amount,
+            cardNumber: payDto.cardNumber,
+            callback: `${process.env.APP_URL_MAIN}/api/properties/${payDto.propertyId}/payment-callback`,
+        };
+
+        axios.post(
+            `${process.env.APP_URL_PAYMENT}/api/payments`,
+            paymentData,
+            { headers: { 'Content-Type': 'application/json' } }
+        );
+
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            throw new ServiceError('Payment initiation failed');
+        } else {
+            throw error;
+        }
+    }
+};
+
+export const paymentCallback = async (paymentCallbackDto: PaymentCallbackDto) => {
+    if (paymentCallbackDto.status === 'success') {
+        return await Property.update(
+            { status: PaymentStatus.ACTIVE },
+            { where: { id: paymentCallbackDto.propertyId } }
+        );
+    }
+    return null;
+};
+
 export const updateProperty = async (id: number, propertyDto: PropertyDto) => {
     const propertyData: PropertyCreationAttributes = {
         ...propertyDto,
-        pictures: propertyDto.pictures.join(',')
+        pictures: propertyDto.pictures.join(','),
+        status: PaymentStatus.ACTIVE
     };
 
     return await Property.update(propertyData, { where: { id } });
@@ -127,7 +177,7 @@ export const assignSensor = async (propertyId: number, propSensorDto: PropertySe
     }
 };
 
-function matchesFilter (property:PropertyInstance,filter:PropertyFilterDto, dateRangesEntered:boolean):boolean{
+function matchesFilter(property: PropertyInstance, filter: PropertyFilterDto, dateRangesEntered: boolean): boolean {
     return (
         filterByLessThan(property.adults, filter.adults) &&
         filterByLessThan(property.kids, filter.kids) &&
@@ -141,103 +191,103 @@ function matchesFilter (property:PropertyInstance,filter:PropertyFilterDto, date
         filterByString(property.state, filter.state) &&
         filterByString(property.balneario, filter.balneario) &&
         filterByString(property.neighborhood, filter.neighborhood) &&
-        (dateRangesEntered ? 
+        (dateRangesEntered ?
             filterByDateRange(property, filter.startDate, filter.endDate)
             : true)
     );
 }
 
-function filterByDateRange(property:PropertyInstance,startDate?:Date,endDate?:Date):boolean{
-    if(startDate === undefined || endDate === undefined){return true}
+function filterByDateRange(property: PropertyInstance, startDate?: Date, endDate?: Date): boolean {
+    if (startDate === undefined || endDate === undefined) { return true; }
 
 
-    const availabilities:AvailabilityInstance[] = property.availabilities ?? [];
-    let availabilitiesCopy:AvailabilityInstance[] = availabilities.map(result => result.toJSON());
+    const availabilities: AvailabilityInstance[] = property.availabilities ?? [];
+    let availabilitiesCopy: AvailabilityInstance[] = availabilities.map(result => result.toJSON());
 
-    const bookings:BookingInstance[] = property.bookings ?? [];
-    let bookingsCopy:BookingInstance[] = bookings.map(result => result.toJSON());
-    
+    const bookings: BookingInstance[] = property.bookings ?? [];
+    let bookingsCopy: BookingInstance[] = bookings.map(result => result.toJSON());
+
     return (isWithinAvailabilityRange(availabilitiesCopy, parseDate(startDate), parseDate(endDate))
         && !intersectsWithBookings(bookingsCopy, parseDate(startDate), parseDate(endDate)));
 }
 
-function isWithinAvailabilityRange(ranges:AvailabilityInstance[],startDate:Date,endDate:Date){
-    let isInRange = false; 
+function isWithinAvailabilityRange(ranges: AvailabilityInstance[], startDate: Date, endDate: Date) {
+    let isInRange = false;
 
-    let cleanAvailabilityRanges : AvailabilityInstance[];
-    if(ranges.length >= 2){
+    let cleanAvailabilityRanges: AvailabilityInstance[];
+    if (ranges.length >= 2) {
         cleanAvailabilityRanges = joinAdyacentDateRanges(ranges);
-    }else{
+    } else {
         cleanAvailabilityRanges = ranges;
     }
 
     cleanAvailabilityRanges.forEach((range) => {
         const isIncludedInRange = ((parseDate(startDate) >= parseDate(range.startDate))
-                                        && (parseDate(endDate) <= parseDate(range.endDate)));
-                                     
-        if(isIncludedInRange){
+            && (parseDate(endDate) <= parseDate(range.endDate)));
+
+        if (isIncludedInRange) {
             isInRange = true;
-        }  
+        }
     });
 
     return isInRange;
 }
 
-function intersectsWithBookings(ranges:BookingInstance[],startDate:Date,endDate:Date){
+function intersectsWithBookings(ranges: BookingInstance[], startDate: Date, endDate: Date) {
     let intersects = false;
-    
+
     let cleanBookingRanges;
-    if(ranges.length >= 2){
+    if (ranges.length >= 2) {
         cleanBookingRanges = joinAdyacentDateRanges(ranges);
-    }else{
+    } else {
         cleanBookingRanges = ranges;
     }
 
     cleanBookingRanges.forEach((bookingRange) => {
         const bookingIntersectsRange = ((startDate <= parseDate(bookingRange.startDate) && endDate >= parseDate(bookingRange.startDate))
-                                    || (startDate <= parseDate(bookingRange.endDate) && endDate >= parseDate(bookingRange.endDate))
-                                    || (startDate >= parseDate(bookingRange.startDate) && endDate <= parseDate(bookingRange.endDate))
-                                    || (startDate <= parseDate(bookingRange.startDate) && endDate >= parseDate(bookingRange.endDate)));
-        if(bookingIntersectsRange){
+            || (startDate <= parseDate(bookingRange.endDate) && endDate >= parseDate(bookingRange.endDate))
+            || (startDate >= parseDate(bookingRange.startDate) && endDate <= parseDate(bookingRange.endDate))
+            || (startDate <= parseDate(bookingRange.startDate) && endDate >= parseDate(bookingRange.endDate)));
+        if (bookingIntersectsRange) {
             intersects = true;
-        }    
+        }
     });
 
     return intersects;
 }
 
-const joinAdyacentDateRanges = (ranges:AvailabilityInstance[] | BookingInstance[]) => {
+const joinAdyacentDateRanges = (ranges: AvailabilityInstance[] | BookingInstance[]) => {
     let sortedRanges = sortDateRanges(ranges);
     let joinedRanges = [];
-    for(let i = sortedRanges.length-1; i > 0; i-- ){
-        if(isOneDayLater(sortedRanges[i-1].endDate, sortedRanges[i].startDate)){
-            sortedRanges[i].startDate = sortedRanges[i-1].startDate;
-            sortedRanges[i-1].endDate = sortedRanges[i].endDate;
-        }else{
+    for (let i = sortedRanges.length - 1; i > 0; i--) {
+        if (isOneDayLater(sortedRanges[i - 1].endDate, sortedRanges[i].startDate)) {
+            sortedRanges[i].startDate = sortedRanges[i - 1].startDate;
+            sortedRanges[i - 1].endDate = sortedRanges[i].endDate;
+        } else {
             joinedRanges.push(sortedRanges[i]);
         }
-    } 
+    }
     joinedRanges.push(sortedRanges[0]);
 
     return joinedRanges;
-} 
+};
 
-const sortDateRanges = (ranges:AvailabilityInstance[] | BookingInstance[]) => {
+const sortDateRanges = (ranges: AvailabilityInstance[] | BookingInstance[]) => {
     let swapped = true;
-    while(swapped === true){
+    while (swapped === true) {
         swapped = false;
-        for (let i = 0; i < ranges.length-1; i++) {
-            if(ranges[i].startDate > ranges[i+1].startDate){
+        for (let i = 0; i < ranges.length - 1; i++) {
+            if (ranges[i].startDate > ranges[i + 1].startDate) {
                 let aux = ranges[i];
-                ranges[i] = ranges[i+1];
-                ranges[i+1] = aux;
-                swapped = true                
+                ranges[i] = ranges[i + 1];
+                ranges[i + 1] = aux;
+                swapped = true;
             }
         }
     }
 
     return ranges;
-}
+};
 
 function isOneDayLater(date1: Date, date2: Date): boolean {
     const date1copy = new Date(date1);
@@ -248,39 +298,39 @@ function isOneDayLater(date1: Date, date2: Date): boolean {
     return date1copy.toDateString() === date2copy.toDateString();
 }
 
-function addDaysToDate(date:Date, days:number):Date{
+function addDaysToDate(date: Date, days: number): Date {
     const date1copy = new Date(date);
     date1copy.setDate(date1copy.getDate() + days);
     return date1copy;
 }
 
-function getTodayDate():Date{
-    
-const timeZone = 'America/Montevideo';
-const now = new Date();
-const zonedDate = toZonedTime(now, timeZone);
-const formattedDate = format(zonedDate, 'yyyy-MM-dd', { timeZone });
-const date = parse(formattedDate, 'yyyy-MM-dd', new Date());
+function getTodayDate(): Date {
 
-return date;
+    const timeZone = 'America/Montevideo';
+    const now = new Date();
+    const zonedDate = toZonedTime(now, timeZone);
+    const formattedDate = format(zonedDate, 'yyyy-MM-dd', { timeZone });
+    const date = parse(formattedDate, 'yyyy-MM-dd', new Date());
+
+    return date;
 }
 
-function parseDate(date:string|Date):Date{
+function parseDate(date: string | Date): Date {
     const parsedDate = new Date(date);
     return parsedDate;
 }
 
-function parseBool(value:string|boolean):boolean{
-    if(typeof value === "string"){
-        if(value.toLocaleLowerCase() === "true"){
+function parseBool(value: string | boolean): boolean {
+    if (typeof value === "string") {
+        if (value.toLocaleLowerCase() === "true") {
             return true;
         }
-        if(value.toLocaleLowerCase() === "false"){
+        if (value.toLocaleLowerCase() === "false") {
             return false;
-        } 
+        }
     }
-    if(typeof value === "boolean"){
+    if (typeof value === "boolean") {
         return value;
-    }  
+    }
     return false;
 }
