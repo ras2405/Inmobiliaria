@@ -6,6 +6,18 @@ import path from 'path';
 
 export const filesWatcher = async () => {
     const filesPath = path.resolve(__dirname, '../../../files');
+
+    if (!fs.existsSync(filesPath)) {
+        console.log(`Directory ${filesPath} does not exist, creating it...`);
+        try {
+            fs.mkdirSync(filesPath, { recursive: true });
+            console.log(`Directory ${filesPath} created successfully.`);
+        } catch (error) {
+            console.error(`Error creating directory ${filesPath}: ${error}`);
+            return;
+        }
+    }
+
     console.log(`Watching directory: ${filesPath}`);
 
     const watcher = chokidar.watch(filesPath, {
@@ -22,8 +34,6 @@ export const filesWatcher = async () => {
     }).on('change', filePath => {
         console.log(`Modified file: ${filePath}`);
         processSensorFile(filePath);
-    }).on('unlink', filePath => {
-        console.log(`File deleted: ${filePath}`);
     }).on('error', error => {
         console.error(`Error in file watcher: ${error}`);
     });
@@ -38,5 +48,4 @@ export const processSensorFile = async (filePath: string) => {
     } catch (error) {
         console.error(`Error when processing file: ${filePath}: ${error}`);
     }
-
 };
