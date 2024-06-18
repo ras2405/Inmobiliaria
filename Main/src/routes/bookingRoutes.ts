@@ -11,7 +11,7 @@ const authMiddleware = (role: string) => (req: CustomRequest, res: Response, nex
 
 router.post('/',
     validate(bookingSchema),
-    authMiddleware('Tenant'),
+    authMiddleware('Tenant'), // este es N4 o N10?
     bookingsController.createBooking
 );
 
