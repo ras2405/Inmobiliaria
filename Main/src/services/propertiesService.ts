@@ -96,7 +96,6 @@ export const createProperty = async (propertyDto: PropertyDto) => {
     const propertyData: PropertyCreationAttributes = {
         ...propertyDto,
         pictures: propertyDto.pictures.join(','),
-        status: PaymentStatus.PENDING
     };
 
     const property = await Property.create(propertyData);
@@ -106,7 +105,7 @@ export const createProperty = async (propertyDto: PropertyDto) => {
 
 export const initiatePayment = async (payDto: PayDto) => {
     try {
-        const property = await Property.findByPk(payDto.propertyId);
+        const property = await Property.findByPk(payDto.id);
         if (!property) {
             throw new NotFoundError('Property not found');
         }
@@ -120,7 +119,7 @@ export const initiatePayment = async (payDto: PayDto) => {
         const paymentData = {
             amount: payDto.amount,
             cardNumber: payDto.cardNumber,
-            callback: `${process.env.APP_URL_MAIN}/api/properties/${payDto.propertyId}/payment-callback`,
+            callback: `${process.env.APP_URL_MAIN}/api/properties/${payDto.id}/payment-callback`,
         };
 
         axios.post(
@@ -142,20 +141,10 @@ export const paymentCallback = async (paymentCallbackDto: PaymentCallbackDto) =>
     if (paymentCallbackDto.status === 'success') {
         return await Property.update(
             { status: PaymentStatus.ACTIVE },
-            { where: { id: paymentCallbackDto.propertyId } }
+            { where: { id: paymentCallbackDto.id } }
         );
     }
     return null;
-};
-
-export const updateProperty = async (id: number, propertyDto: PropertyDto) => {
-    const propertyData: PropertyCreationAttributes = {
-        ...propertyDto,
-        pictures: propertyDto.pictures.join(','),
-        status: PaymentStatus.ACTIVE
-    };
-
-    return await Property.update(propertyData, { where: { id } });
 };
 
 export const assignSensor = async (propertyId: number, propSensorDto: PropertySensorDto) => {
