@@ -1,5 +1,4 @@
 import { AlertDto } from "../schemas/alert";
-// import { alerts } from "../services/sensorValueService";
 
 const amqp = require('amqplib');
 
