@@ -15,3 +15,14 @@ export const findSensorById = async (sensorId: string) => {
         throw error;
     }
 };
+
+export const findSensorReturnPath = async (sensorId: string) => {
+    try {
+        const sensor = await Sensor.findOne({ id: sensorId });
+        if (!sensor) throw new NotFoundError('Sensor not found');
+        return sensor.observableProperties;
+    }
+    catch (error) {
+        throw error;
+    }
+};
