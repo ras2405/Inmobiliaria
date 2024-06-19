@@ -1,21 +1,14 @@
-import { SensorValueDto } from "./schemas/sensorValue";
-
-// type SensorData = {
-//     sensorId: string;
-//     HumedadAmbiente: {
-//         value: string;
-//     };
-//     Temperatura: {
-//         Unidad: string;
-//         value: string;
-//     };
-// };
+import path from "path";
+import { SensorValueDto, sensorValueSchema } from "./schemas/sensorValue";
+import axios from 'axios';
+import { saveSensorData } from "../src/config/sensorWriter";
+import { loadSensorData } from "./config/sensorLoader";
 
 let intervalId: NodeJS.Timeout | null = null;
 let requestRatePerMinute: number = 0;
 const sensors: string[] = [];
 
-export const constructor = async (requestRatePerMinute: number, sensors: string[]) => {
+export const simConstructor = async (requestRatePerMinute: number, sensors: string[]) => {
     requestRatePerMinute = requestRatePerMinute;
     sensors = sensors;
 };
@@ -92,11 +85,19 @@ export const start = async () => {
     }
 
     const interval = (60 / requestRatePerMinute) * 1000;
-    intervalId = setInterval(() => {
-        sensors.forEach(sensorId => {
-            const data = generateSensorData(sensorId);
-            console.log(JSON.stringify(data));
-        });
+    intervalId = setInterval(async () => {
+        for (const sensorId of sensors) {
+            const currentFile = loadSensorData(path.resolve(__dirname, `../../files/${sensorId}.json`));
+            const filePath = path.resolve(__dirname, `../../files/${sensorId}.json`);
+            try {
+                const fileData = sensorValueSchema.parse(currentFile);
+                const data = generateSensorData(sensorId, fileData);
+                await saveSensorData(filePath, JSON.stringify(data));
+
+            } catch (error) {
+                console.error(`Error writing data to ${filePath}:`, error);
+            }
+        }
     }, interval);
 };
 
@@ -119,4 +120,8 @@ export const setSensors = async (sensors: string[]) => {
     sensors = sensors;
 };
 
-// export default SensorSimulator;
+export const startSimulation = async () => {
+    const sensors = await axios.get('http://localhost:3002/api/sensors');
+    await simConstructor(5, sensors.data.map((sensor: any) => sensor.id));
+    await start();
+};

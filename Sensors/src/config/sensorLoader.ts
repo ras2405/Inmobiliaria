@@ -9,5 +9,3 @@ export const loadSensorData = async (dir: string) => {
         return JSON.parse(data);
     });
 };
-
-// export const sensorData = loadSensorData('../../../files');// REVISAR DONDE SE TENDRIA QUE LLAMAR

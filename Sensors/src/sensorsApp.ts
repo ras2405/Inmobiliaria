@@ -7,6 +7,7 @@ import { processAlerts } from './services/alertsSubscriber';
 import { filesWatcher } from './config/sensorWatcher';
 import { publishAlerts } from './services/alertsPublisher';
 import path from 'path';
+import { startSimulation } from './sensorSimulation';
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
@@ -46,6 +47,7 @@ const main = async () => {
     await publishAlerts([]);
     await processAlerts();
     await filesWatcher();
+    // await startSimulation();
 };
 
 main();

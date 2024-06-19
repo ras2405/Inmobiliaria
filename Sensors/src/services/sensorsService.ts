@@ -26,3 +26,7 @@ export const findSensorReturnPath = async (sensorId: string) => {
         throw error;
     }
 };
+
+export const findAllSensors = async () => {
+    return await Sensor.find();
+};
