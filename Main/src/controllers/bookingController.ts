@@ -3,6 +3,7 @@ import * as bookingsService from '../services/bookingsService';
 import { PayDto } from '../schemas/pay';
 import { PaymentCallbackDto } from '../schemas/paymentCallback';
 import { BookingFilterDto } from '../schemas/bookingFilter';
+import { BookingMailDto } from '../schemas/bookingIdMail'
 
 export const createBooking = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -48,6 +49,20 @@ export const getBookings = async (req: Request, res: Response, next: NextFunctio
     try {
         const bookingFilterDto: BookingFilterDto = req.query;
         const bookings = await bookingsService.getBookingsAsAdminOperator(bookingFilterDto);
+        res.status(201).json({
+            status: 'success',
+            data: bookings
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getOwnBooking = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const bookingMailDto: BookingMailDto = req.body;
+        const id = parseInt(req.params.id);
+        const bookings = await bookingsService.getOwnBooking(id,bookingMailDto);
         res.status(201).json({
             status: 'success',
             data: bookings
