@@ -3,9 +3,16 @@ import { BadRequestError } from "../exceptions/BadRequestError";
 import { NotFoundError } from "../exceptions/NotFoundError";
 import { Availability } from "../models/Availability";
 import { AvailabilityDto } from "../schemas/availability";
+import { Property } from "../models/Property";
+import { PaymentStatus } from "../constants/payments";
 
 export const createAvailability = async (availabilityDto: AvailabilityDto) => {
     try {
+        const property = await Property.findByPk(availabilityDto.propertyId);
+        if (property?.status !== PaymentStatus.ACTIVE) {
+            throw new BadRequestError("No active payment for this property");
+        }
+
         const existingAvailabilities = await findExistingAvailabilities(availabilityDto);
 
         if (existingAvailabilities.length > 0) {
@@ -15,6 +22,7 @@ export const createAvailability = async (availabilityDto: AvailabilityDto) => {
         }
 
         const availability = await Availability.create(availabilityDto);
+
         return availability;
     } catch (error: unknown) {
         if (error instanceof ForeignKeyConstraintError) {

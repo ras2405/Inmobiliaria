@@ -15,7 +15,8 @@ import { BadRequestError } from "../exceptions/BadRequestError";
 import { format, toZonedTime } from 'date-fns-tz';
 import { parse } from "date-fns";
 import { Op } from "sequelize";
-import { filterByBoolean, filterByString, filterByGreaterThan,filterByLessThan } from "../utils/filterFunctions";
+import { filterByBoolean, filterByString, filterByGreaterThan, filterByLessThan } from "../utils/filterFunctions";
+import { sendEmail } from "../utils/sendEmail";
 
 export const findAllProperties = async () => {
     return await Property.findAll();
@@ -100,6 +101,11 @@ export const createProperty = async (propertyDto: PropertyDto) => {
 
     const property = await Property.create(propertyData);
 
+    sendEmail(
+        'OWNER: New property created!',
+        `A new property has been created with the id: ${property.id}`
+    );
+
     return property;
 };
 
@@ -138,13 +144,17 @@ export const initiatePayment = async (payDto: PayDto) => {
 };
 
 export const paymentCallback = async (paymentCallbackDto: PaymentCallbackDto) => {
-    if (paymentCallbackDto.status === 'success') {
-        return await Property.update(
-            { status: PaymentStatus.ACTIVE },
-            { where: { id: paymentCallbackDto.id } }
-        );
+    try {
+        if (paymentCallbackDto.status === 'success') {
+            return await Property.update(
+                { status: PaymentStatus.ACTIVE },
+                { where: { id: paymentCallbackDto.id } }
+            );
+        }
+        return null;
+    } catch (error) {
+        throw error;
     }
-    return null;
 };
 
 export const assignSensor = async (propertyId: number, propSensorDto: PropertySensorDto) => {

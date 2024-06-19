@@ -12,12 +12,15 @@ import { PaymentStatus } from "../constants/payments";
 import { PaymentCallbackDto } from "../schemas/paymentCallback";
 import { BookingFilterDto } from "../schemas/bookingFilter";
 import { filterByString, filterByDifferentNumber } from "../utils/filterFunctions";
+import { sendEmail } from "../utils/sendEmail";
 
 export const createBooking = async (bookingDto: BookingDto) => {
 
     try {
         const property = await Property.findOne({
-            where: { id: bookingDto.propertyId },
+            where: {
+                id: bookingDto.propertyId,
+            },
             include: [{
                 model: Availability,
                 as: 'availabilities'
@@ -25,11 +28,19 @@ export const createBooking = async (bookingDto: BookingDto) => {
             {
                 model: Booking,
                 as: 'bookings',
+                where: {
+                    status: {
+                        [Op.ne]: PaymentStatus.CANCELLED
+                    }
+                }
             }]
         });
 
         if (!property) {
             throw new NotFoundError("Incorrect property id");
+        }
+        if (property.status !== PaymentStatus.ACTIVE) {
+            throw new BadRequestError("Property not available for booking");
         }
         if (bookingDto.adults > property.adults) {
             throw new BadRequestError("Property doesn't have enough capacity for that many adults");
@@ -49,6 +60,12 @@ export const createBooking = async (bookingDto: BookingDto) => {
         if (returnBooking) {
             notifyBookingToAdminAndOwner(bookingDto);
         }
+
+        sendEmail(
+            'ADMIN & OWNER: New booking',
+            `A new booking has been made for property ${property.name}`
+        );
+
         return returnBooking;
     } catch (error) {
         throw error;
@@ -89,13 +106,24 @@ export const initiatePayment = async (payDto: PayDto) => {
 };
 
 export const paymentCallback = async (paymentCallbackDto: PaymentCallbackDto) => {
-    if (paymentCallbackDto.status === 'success') {
-        return await Booking.update(
-            { status: PaymentStatus.ACTIVE },
-            { where: { id: paymentCallbackDto.id } }
-        );
+    try {
+        if (paymentCallbackDto.status === 'success') {
+            const bookingUpdate = await Booking.update(
+                { status: PaymentStatus.ACTIVE },
+                { where: { id: paymentCallbackDto.id } }
+            );
+
+            sendEmail(
+                'ADMIN & OWNER: Payment success',
+                `The payment for booking ${paymentCallbackDto.id} has been successful`
+            );
+
+            return bookingUpdate;
+        }
+        return null;
+    } catch (error) {
+        throw error;
     }
-    return null;
 };
 
 const notifyBookingToAdminAndOwner = async (bookingDto: BookingDto) => {
