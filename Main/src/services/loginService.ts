@@ -1,7 +1,7 @@
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import { BadRequestError } from "../exceptions/BadRequestError";
-import { secretKey } from '../middlewares/loginConfig';
+import { secretKey } from '../middlewares/roleAuth';
 import { User } from "../models/User";
 import { LoginDto } from "../schemas/login";
 
@@ -17,7 +17,7 @@ export const login = async (loginDto: LoginDto) => {
     const errorMessage = 'Wrong mail or password. Please try again.';
     if (!user) throw new BadRequestError(errorMessage);
 
-    const token = jwt.sign({ mail }, secretKey, { expiresIn: '2h' });
+    const token = jwt.sign({ mail }, secretKey, { expiresIn: '24h' });
 
     const returnedUser = {
         mail: mail,

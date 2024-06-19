@@ -1,6 +1,17 @@
-import { DataTypes } from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../config/database';
-export const Session = sequelize.define('Session', {
+
+interface SessionAttributes {
+    id?: number;
+    mail: string;
+    token: string;
+    role: string;
+}
+
+interface SessionCreationAttributes extends Optional<SessionAttributes, 'id'> { }
+interface SessionInstance extends Model<SessionAttributes, SessionCreationAttributes>, SessionAttributes { }
+
+export const Session = sequelize.define<SessionInstance>('Session', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
