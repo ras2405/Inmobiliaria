@@ -1,7 +1,7 @@
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import { BadRequestError } from "../exceptions/BadRequestError";
-import { secretKey } from '../middlewares/loginConfig';
+import { secretKey } from '../middlewares/roleAuth';
 import { User } from "../models/User";
 import { LoginDto } from "../schemas/login";
 

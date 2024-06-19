@@ -9,7 +9,7 @@ import { paymentCallbackSchema } from '../schemas/paymentCallback';
 import { propertySensorSchema } from '../schemas/propertySensor';
 import { propertyFilterSchema } from '../schemas/propertyFilter';
 import { validateParams } from '../middlewares/validateParams';
-import { authenticateToken, CustomRequest } from '../middlewares/loginConfig';
+import { authenticateToken, CustomRequest } from '../middlewares/roleAuth';
 
 const router = Router();
 

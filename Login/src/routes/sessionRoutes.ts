@@ -2,7 +2,7 @@ import { NextFunction, Router, Response } from 'express';
 import * as sessionController from '../controller/sessionController';
 import { validate } from '../middlewares/validate';
 import { sessionSchema } from '../schema/session';
-import { authenticateToken, CustomRequest } from '../../../Main/src/middlewares/loginConfig';
+import { authenticateToken, CustomRequest } from '../../../Main/src/middlewares/roleAuth';
 
 const router = Router();
 
@@ -13,7 +13,8 @@ router.post(
     '/',
     validate(sessionSchema),
     authMiddleware('Admin'),
-    sessionController.login);
+    sessionController.login
+);
 router.get('/:token', sessionController.getSession);
 
 export default router;

@@ -4,7 +4,7 @@ import { validate } from '../middlewares/validate';
 import { bookingSchema } from '../schemas/booking';
 import { validateParams } from '../middlewares/validateParams';
 import { bookingFilterSchema } from '../schemas/bookingFilter';
-import { authenticateToken, CustomRequest } from '../middlewares/loginConfig';
+import { authenticateToken, CustomRequest } from '../middlewares/roleAuth';
 
 const router = Router();
 
@@ -13,10 +13,10 @@ const authMiddleware = (role: string) => (req: CustomRequest, res: Response, nex
 
 router.post('/',
     validate(bookingSchema),
-    authMiddleware('Tenant'), // este es N4 o N10?
+    authMiddleware('Tenant'),
     bookingsController.createBooking
 );
 
-router.get('/',validateParams(bookingFilterSchema), bookingsController.getBookings);
+router.get('/', validateParams(bookingFilterSchema), bookingsController.getBookings);
 
 export default router;
