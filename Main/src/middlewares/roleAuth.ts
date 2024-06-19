@@ -9,6 +9,9 @@ export interface CustomRequest extends Request {
 
 export const secretKey = "this-is-the-secret-key";
 
+export const authMiddleware = (role: string) => (req: CustomRequest, res: Response, next: NextFunction) =>
+    authenticateToken(req, res, next, role);
+
 export const authenticateToken = async (req: CustomRequest, res: Response, next: NextFunction, role: string) => {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];

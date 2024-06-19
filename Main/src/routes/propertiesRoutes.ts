@@ -1,4 +1,4 @@
-import { NextFunction, Router, Response } from 'express';
+import { Router } from 'express';
 import * as propertiesController from '../controllers/propertiesController';
 import { validate } from '../middlewares/validate';
 import { propertySchema } from '../schemas/property';
@@ -9,12 +9,9 @@ import { paymentCallbackSchema } from '../schemas/paymentCallback';
 import { propertySensorSchema } from '../schemas/propertySensor';
 import { propertyFilterSchema } from '../schemas/propertyFilter';
 import { validateParams } from '../middlewares/validateParams';
-import { authenticateToken, CustomRequest } from '../middlewares/roleAuth';
+import { authMiddleware } from '../middlewares/roleAuth';
 
 const router = Router();
-
-const authMiddleware = (role: string) => (req: CustomRequest, res: Response, next: NextFunction) =>
-    authenticateToken(req, res, next, role);
 
 router.get(
     '/',
@@ -35,7 +32,8 @@ router.post(
     '/:id/pay',
     validate(paySchema),
     authMiddleware('Tenant'),
-    propertiesController.initiatePayment);
+    propertiesController.initiatePayment
+);
 router.put(
     '/:id/payment-callback',
     validate(paymentCallbackSchema),
@@ -45,7 +43,8 @@ router.put(
     '/:id',
     validate(propertySensorSchema),
     authMiddleware('Admin'),
-    propertiesController.assignSensor);
+    propertiesController.assignSensor
+);
 
 export default router;
 
