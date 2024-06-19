@@ -4,7 +4,6 @@ import { PayDto } from '../schemas/pay';
 import { PaymentCallbackDto } from '../schemas/paymentCallback';
 import { BookingFilterDto } from '../schemas/bookingFilter';
 import { BookingMailDto } from '../schemas/bookingIdMail'
-import { z } from 'zod';
 
 export const createBooking = async (req: Request, res: Response, next: NextFunction) => {
     try {
