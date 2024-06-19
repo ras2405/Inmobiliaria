@@ -5,7 +5,7 @@ export const sensorValueSchema = z.object({
 
     Humidity: z
         .object({
-            unit: z.enum(['percentage', 'boolean']).optional().default('porcentage'),
+            unit: z.enum(['percentage', 'boolean']).optional().default('percentage'),
             value: z.union([z.enum(['true', 'false']), z.number()]),
             regex: z.string().optional().refine((val) => {
                 if (val === undefined) return true;
@@ -104,8 +104,8 @@ export const sensorValueSchema = z.object({
     }).optional(),
 
     Gas: z.object({
-        unit: z.enum(['temperature', 'porcentage', 'boolean']).optional().default('boolean'),
-        value: z.union([z.string(), z.number()]),
+        unit: z.enum(['temperature', 'percentage', 'boolean']).optional().default('boolean'),
+        value: z.union([z.enum(['true', 'false']), z.number()]),
         regex: z.string().optional().refine((val) => {
             if (val === undefined) return true;
             try {
@@ -120,8 +120,8 @@ export const sensorValueSchema = z.object({
     }).optional(),
 
     Smoke: z.object({
-        unit: z.literal('boolean'),
-        value: z.enum(['true', 'false']),
+        unit: z.enum(['percentage', 'boolean']).optional().default('boolean'),
+        value: z.union([z.enum(['true', 'false']), z.number()]),
         regex: z.string().optional().refine((val) => {
             if (val === undefined) return true;
             try {
