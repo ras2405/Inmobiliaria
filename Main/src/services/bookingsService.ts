@@ -12,6 +12,7 @@ import { PaymentStatus } from "../constants/payments";
 import { PaymentCallbackDto } from "../schemas/paymentCallback";
 import { BookingFilterDto } from "../schemas/bookingFilter";
 import { filterByString, filterByDifferentNumber } from "../utils/filterFunctions";
+import { BookingMailDto } from "../schemas/bookingIdMail";
 
 export const createBooking = async (bookingDto: BookingDto) => {
 
@@ -121,6 +122,26 @@ export const getBookingsAsAdminOperator = async (bookingFilterDto: BookingFilter
 
     return bookings;
 };
+
+export const getOwnBooking = async (bookingId:number,bookingMailDto: BookingMailDto) => {
+    if(bookingId <= 0){
+        throw new BadRequestError("Id must be a positive number");
+    }
+
+    let bookings = await Booking.findAll({
+        where: {
+            id: bookingId,
+            mail: bookingMailDto.mail
+        }
+    });
+
+    if (!bookings) {
+        throw new NotFoundError("No properties were found");
+    }
+
+    return bookings;
+};
+
 
 const isBookingInAvailableDates = (booking: BookingDto, ranges: AvailabilityInstance[], existingBookings: BookingInstance[]) => {
     let available = false;

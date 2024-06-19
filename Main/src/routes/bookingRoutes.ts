@@ -6,6 +6,7 @@ import { paySchema } from '../schemas/pay';
 import { paymentCallbackSchema } from '../schemas/paymentCallback';
 import { validateParams } from '../middlewares/validateParams';
 import { bookingFilterSchema } from '../schemas/bookingFilter';
+import { bookingMail } from '../schemas/bookingIdMail';
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.put(
 );
 router.post('/', validate(bookingSchema), bookingsController.createBooking);
 router.get('/', validateParams(bookingFilterSchema), bookingsController.getBookings);
+router.get('/:id/own/',validate(bookingMail), bookingsController.getOwnBooking);
 
 export default router;
