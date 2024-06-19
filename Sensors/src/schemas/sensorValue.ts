@@ -1,45 +1,43 @@
 import { z } from "zod";
 
 export const sensorValueSchema = z.object({
-    id: z.string(),
+    id: z.string({ message: 'id must be a string' }),
 
-    Humidity: z
-        .object({
-            unit: z.enum(['percentage', 'boolean']).optional().default('percentage'),
-            value: z.union([z.enum(['true', 'false']), z.number()]),
-            regex: z.string().optional().refine((val) => {
-                if (val === undefined) return true;
-                try {
-                    new RegExp(val);
-                    return true;
-                } catch (e) {
-                    return false;
-                }
-            }, {
-                message: 'regex must be a regular valid expression'
-            }).default('No regex')
-        })
+    humidity: z.object({
+        unit: z.enum(['percentage', 'boolean'], { message: "Unit must be a 'percentage' or a 'boolean' " }).optional().default('percentage'),
+        value: z.union([z.enum(['true', 'false']), z.number()]),
+        regex: z.string().optional().refine((val) => {
+            if (val === undefined) return true;
+            try {
+                new RegExp(val);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }, {
+            message: 'regex must be a regular valid expression'
+        }).default('No regex')
+    })
         .optional(),
 
-    Temperature: z
-        .object({
-            unit: z.enum(['celsius', 'farhenheit', 'boolean']).optional().default('celsius'),
-            value: z.union([z.enum(['true', 'false']), z.number()]),
-            regex: z.string().optional().refine((val) => {
-                if (val === undefined) return true;
-                try {
-                    new RegExp(val);
-                    return true;
-                } catch (e) {
-                    return false;
-                }
-            }, {
-                message: 'regex must be a regular valid expression'
-            }).default('No regex')
-        })
+    temperature: z.object({
+        unit: z.enum(['celsius', 'farhenheit', 'boolean']).optional().default('celsius'),
+        value: z.union([z.enum(['true', 'false']), z.number()]),
+        regex: z.string().optional().refine((val) => {
+            if (val === undefined) return true;
+            try {
+                new RegExp(val);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        }, {
+            message: 'regex must be a regular valid expression'
+        }).default('No regex')
+    })
         .optional(),
 
-    Electricity: z.object({
+    electricity: z.object({
         unit: z.enum(['watt', 'boolean']).optional().default('watt'),
         value: z.union([z.enum(['true', 'false']), z.number()]),
         regex: z.string().optional().refine((val) => {
@@ -55,7 +53,7 @@ export const sensorValueSchema = z.object({
         }).default('No regex')
     }).optional(),
 
-    DoorLock: z.object({
+    doorLock: z.object({
         unit: z.literal('boolean'),
         value: z.enum(['true', 'false']),
         regex: z.string().optional().refine((val) => {
@@ -71,7 +69,7 @@ export const sensorValueSchema = z.object({
         }).default('No regex')
     }).optional(),
 
-    WindowLock: z.object({
+    windowLock: z.object({
         unit: z.literal('boolean'),
         value: z.enum(['true', 'false']),
         regex: z.string().optional().refine((val) => {
@@ -87,7 +85,7 @@ export const sensorValueSchema = z.object({
         }).default('No regex')
     }).optional(),
 
-    Water: z.object({
+    water: z.object({
         unit: z.enum(['liters', 'boolean']).optional().default('liters'),
         value: z.union([z.enum(['true', 'false']), z.number()]),
         regex: z.string().optional().refine((val) => {
@@ -103,7 +101,7 @@ export const sensorValueSchema = z.object({
         }).default('No regex')
     }).optional(),
 
-    Gas: z.object({
+    gas: z.object({
         unit: z.enum(['temperature', 'percentage', 'boolean']).optional().default('boolean'),
         value: z.union([z.enum(['true', 'false']), z.number()]),
         regex: z.string().optional().refine((val) => {
@@ -119,7 +117,7 @@ export const sensorValueSchema = z.object({
         }).default('No regex')
     }).optional(),
 
-    Smoke: z.object({
+    smoke: z.object({
         unit: z.enum(['percentage', 'boolean']).optional().default('boolean'),
         value: z.union([z.enum(['true', 'false']), z.number()]),
         regex: z.string().optional().refine((val) => {
