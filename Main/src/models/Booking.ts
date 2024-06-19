@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../config/database';
+import { PaymentStatus } from '../constants/payments';
 
 interface BookingAttributes {
     id?: number;
@@ -11,19 +12,18 @@ interface BookingAttributes {
     phone: string;
     country: string;
     state: string;
-    status?: string;
+    status?: PaymentStatus;
     adults: number;
     kids: number;
     propertyId: number;
     startDate: Date;
     endDate: Date;
+    createdAt?: Date;
 }
 
-interface BookingCreationAttributes extends Optional<BookingAttributes, 'id'> {
-    status?: string;
-}
+interface BookingCreationAttributes extends Optional<BookingAttributes, 'id'> { }
 
-interface BookingInstance extends Model<BookingAttributes, BookingCreationAttributes>, BookingAttributes {}
+interface BookingInstance extends Model<BookingAttributes, BookingCreationAttributes>, BookingAttributes { }
 
 
 const Booking = sequelize.define<BookingInstance>('bookings', {
@@ -89,9 +89,8 @@ const Booking = sequelize.define<BookingInstance>('bookings', {
         allowNull: false,
     },
     status: {
-        type: DataTypes.ENUM('En espera', 'Aceptado', 'Denegado'),
-        allowNull: true,
-        defaultValue: 'En espera'
+        type: DataTypes.ENUM(...Object.values(PaymentStatus)),
+        defaultValue: PaymentStatus.PENDING
     },
     adults: {
         type: DataTypes.INTEGER,
@@ -105,7 +104,7 @@ const Booking = sequelize.define<BookingInstance>('bookings', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'Properties', 
+            model: 'Properties',
             key: 'id'
         },
         onUpdate: 'CASCADE'
@@ -129,8 +128,12 @@ const Booking = sequelize.define<BookingInstance>('bookings', {
                 msg: 'End date must be a valid date'
             }
         }
+    },
+    createdAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+        allowNull: false
     }
-
 }, {
     tableName: 'Bookings',
     timestamps: false

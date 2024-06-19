@@ -52,7 +52,7 @@ export const createProperty = async (req: Request, res: Response, next: NextFunc
 export const initiatePayment = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const payDto: PayDto = req.body;
-        payDto.propertyId = parseInt(req.params.id);
+        payDto.id = parseInt(req.params.id);
 
         await propertiesService.initiatePayment(payDto);
 
@@ -67,7 +67,7 @@ export const initiatePayment = async (req: Request, res: Response, next: NextFun
 export const paymentCallback = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const paymentCallbackDto: PaymentCallbackDto = req.body;
-        paymentCallbackDto.propertyId = parseInt(req.params.id);
+        paymentCallbackDto.id = parseInt(req.params.id);
 
         await propertiesService.paymentCallback(paymentCallbackDto);
         res.status(200).json({
@@ -75,21 +75,6 @@ export const paymentCallback = async (req: Request, res: Response, next: NextFun
         });
     } catch (error) {
         next(error);
-    }
-};
-
-export const updateProperty = async (req: Request, res: Response) => {
-    try {
-        const { id } = req.params;
-        const updated = await propertiesService.updateProperty(parseInt(id), req.body);
-
-        if (updated[0] === 1) { // Sequelize update devuelve un array con el número de filas afectadas
-            res.status(200).json({ message: 'Propiedad actualizada' });
-        } else {
-            res.status(404).json({ message: 'Propiedad no encontrada' });
-        }
-    } catch (error: any) { // SACAR ANY
-        res.status(400).json({ message: 'Error al actualizar la Propiedad', error: Error(error) });
     }
 };
 
