@@ -84,7 +84,7 @@ const Property = sequelize.define<PropertyInstance>('Property', {
     },
     status: {
         type: DataTypes.ENUM(...Object.values(PaymentStatus)),
-        defaultValue: PaymentStatus.ACTIVE
+        defaultValue: PaymentStatus.PENDING
     },
     createdAt: {
         type: DataTypes.DATE,
