@@ -26,7 +26,7 @@ const syncTables = async () => {
       await Availability.sync({ force: false });
       await User.sync();
       await Booking.sync();
-      console.log('The models were synchronized with the database.');
+      console.info('The models were synchronized with the database.');
     }
   } catch (error) {
     console.error('Error synchronizing the models with the database:', error);

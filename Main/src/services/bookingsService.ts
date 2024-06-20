@@ -195,7 +195,7 @@ export const refundCallback = async (paymentCallbackDto: PaymentCallbackDto) => 
 };
 
 const notifyBookingToAdminAndOwner = async (bookingDto: BookingDto) => {
-    console.log("Notificar a Admin y a Owner");
+    console.info("Notificar a Admin y a Owner");
 };
 
 export const findPropertyBookings = async (id: number) => {

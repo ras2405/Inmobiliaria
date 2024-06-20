@@ -21,7 +21,7 @@ export const sensorValueSchema = z.object({
         .optional(),
 
     temperature: z.object({
-        unit: z.enum(['celsius', 'farhenheit', 'boolean']).optional().default('celsius'),
+        unit: z.enum(['celsius', 'farhenheit', 'boolean'], { message: "Unit must be a 'celsius', a 'farhenheit' or a 'boolean' " }).optional().default('celsius'),
         value: z.union([z.enum(['true', 'false']), z.number()]),
         regex: z.string().optional().refine((val) => {
             if (val === undefined) return true;
@@ -38,7 +38,7 @@ export const sensorValueSchema = z.object({
         .optional(),
 
     electricity: z.object({
-        unit: z.enum(['watt', 'boolean']).optional().default('watt'),
+        unit: z.enum(['watt', 'boolean'], { message: "Unit must be a 'watt' or a 'boolean' " }).optional().default('watt'),
         value: z.union([z.enum(['true', 'false']), z.number()]),
         regex: z.string().optional().refine((val) => {
             if (val === undefined) return true;
@@ -54,7 +54,7 @@ export const sensorValueSchema = z.object({
     }).optional(),
 
     doorLock: z.object({
-        unit: z.literal('boolean'),
+        unit: z.literal('boolean', { message: "Unit must be a 'boolean' " }),
         value: z.enum(['true', 'false']),
         regex: z.string().optional().refine((val) => {
             if (val === undefined) return true;
@@ -70,7 +70,7 @@ export const sensorValueSchema = z.object({
     }).optional(),
 
     windowLock: z.object({
-        unit: z.literal('boolean'),
+        unit: z.literal('boolean', { message: "Unit must be a 'boolean' " }),
         value: z.enum(['true', 'false']),
         regex: z.string().optional().refine((val) => {
             if (val === undefined) return true;
@@ -86,7 +86,7 @@ export const sensorValueSchema = z.object({
     }).optional(),
 
     water: z.object({
-        unit: z.enum(['liters', 'boolean']).optional().default('liters'),
+        unit: z.enum(['liters', 'boolean'], { message: "unit must be 'liters' or 'boolean'" }).optional().default('liters'),
         value: z.union([z.enum(['true', 'false']), z.number()]),
         regex: z.string().optional().refine((val) => {
             if (val === undefined) return true;
@@ -102,7 +102,8 @@ export const sensorValueSchema = z.object({
     }).optional(),
 
     gas: z.object({
-        unit: z.enum(['temperature', 'percentage', 'boolean']).optional().default('boolean'),
+        unit: z.enum(['celsius', 'farhenheit', 'percentage', 'boolean'],
+            { message: "Unit must be a 'celsius', a 'farhenheit', 'percentage' or a 'boolean' " }).optional().default('boolean'),
         value: z.union([z.enum(['true', 'false']), z.number()]),
         regex: z.string().optional().refine((val) => {
             if (val === undefined) return true;
@@ -118,7 +119,7 @@ export const sensorValueSchema = z.object({
     }).optional(),
 
     smoke: z.object({
-        unit: z.enum(['percentage', 'boolean']).optional().default('boolean'),
+        unit: z.enum(['percentage', 'boolean'], { message: "unit must be a 'percentage' or a 'boolean'" }).optional().default('boolean'),
         value: z.union([z.enum(['true', 'false']), z.number()]),
         regex: z.string().optional().refine((val) => {
             if (val === undefined) return true;

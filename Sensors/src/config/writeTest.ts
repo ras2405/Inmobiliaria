@@ -9,7 +9,7 @@ try {
         fs.mkdirSync(directoryPath, { recursive: true });
     }
     fs.writeFileSync(testFilePath, 'This is a test.', 'utf-8');
-    console.log(`Write test successful. Test file created at: ${testFilePath}`);
+    console.info(`Write test successful. Test file created at: ${testFilePath}`);
 } catch (error) {
     console.error('Error writing to directory:', error);
 }

@@ -16,7 +16,7 @@ const connectDB = async () => {
     try {
         await dbSync();
         await sequelize.authenticate();
-        console.log('The connection to the database has been successfully established.');
+        console.info('The connection to the database has been successfully established.');
     } catch (error) {
         console.error('Failed to connect to the database": ', error);
     }
@@ -25,7 +25,7 @@ const connectDB = async () => {
 // Server
 const startServer = async () => {
     app.listen(port, () => {
-        console.log(`Server running on http://localhost:${port}`);
+        console.info(`Server running on http://localhost:${port}`);
     });
 };
 

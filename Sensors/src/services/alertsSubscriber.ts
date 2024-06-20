@@ -1,6 +1,7 @@
 import { AlertDto, alertSchema } from "../schemas/alert";
 import amqp, { Message } from 'amqplib';
 import dotenv from 'dotenv';
+import { sendEmail } from "../../../Main/src/utils/sendEmail";
 
 const QUEUE = 'alerts';
 const MAX_PRIORITY = 10;
@@ -26,6 +27,9 @@ export const processAlerts = async () => {
 };
 
 export const sendAlert = async (alert: AlertDto) => {
-    // enviar por mail
-    console.log(`>>> Sending alert (mail) for sensor ${alert.id}: ${alert.message}`);
+    sendEmail(
+        'ADMIN: New sensor alert',
+        `Sensor ${alert.id}: ${alert.message}`
+    );
+    console.info(`>>> Sending alert (mail) for sensor ${alert.id}: ${alert.message}`);
 };

@@ -12,7 +12,7 @@ app.use('/api', router);
 // Server
 const startServer = async () => {
     app.listen(port, () => {
-        console.log(`Server running on http://localhost:${port}`);
+        console.info(`Server running on http://localhost:${port}`);
     });
 };
 

@@ -20,7 +20,7 @@ const checkPendingPayments = async () => {
             }
         }
     );
-    
+
     await Booking.update(
         { status: BookingStatus.CANCELLED_NON_PAYMENT },
         {
@@ -38,4 +38,4 @@ const checkPendingPayments = async () => {
 
 cron.schedule('* * * * *', checkPendingPayments);
 
-console.log('Cron job scheduled to check for pending payments every minute');
+console.info('Cron job scheduled to check for pending payments every minute');

@@ -25,10 +25,10 @@ const connectMongo = async () => {
         console.error("MongoDB URI is not defined in the environment variables");
         process.exit(1);
     }
-    console.log("Connecting to MongoDB with URI:", mongoUri);
+    console.info("Connecting to MongoDB with URI:", mongoUri);
 
     mongoose.connect(mongoUri)
-        .then(() => console.log("MongoDB connected"))
+        .then(() => console.info("MongoDB connected"))
         .catch(err => {
             console.error("Failed to connect to MongoDB", err);
             process.exit(1);
@@ -37,7 +37,7 @@ const connectMongo = async () => {
 
 const startServer = async () => {
     app.listen(port, () => {
-        console.log(`Server is running on port ${port}`);
+        console.info(`Server is running on port ${port}`);
     });
 };
 

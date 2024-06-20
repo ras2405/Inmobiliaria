@@ -30,7 +30,6 @@ export const authenticateToken = async (req: CustomRequest, res: Response, next:
                     } else {
                         if (typeof decoded === 'object' && 'mail' in decoded) {
                             req.user = decoded?.mail;
-                            console.log('Decoded token:', decoded);
                             try {
                                 const userRole = await authenticateSession(token, req.user?.toString(), next);
                                 if (userRole !== role) {

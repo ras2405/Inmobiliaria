@@ -20,7 +20,7 @@ const syncTables = async () => {
     try {
         if (process.env.LOGIN_SYNC === 'true') {
             await Session.sync();
-            console.log('The models were synchronized with the database.');
+            console.info('The models were synchronized with the database.');
         }
     } catch (error) {
         console.error('Error synchronizing the models with the database:', error);
