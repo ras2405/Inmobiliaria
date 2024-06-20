@@ -41,13 +41,18 @@ const startServer = async () => {
     });
 };
 
+function delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 const main = async () => {
     await connectMongo();
     await startServer();
     await publishAlerts([]);
     await processAlerts();
     await filesWatcher();
-    // await startSimulation();
+    await delay(5000);
+    await startSimulation();
 };
 
 main();

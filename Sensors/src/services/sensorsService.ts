@@ -50,5 +50,6 @@ export const findSensorReturnPath = async (sensorId: string) => {
 };
 
 export const findAllSensors = async () => {
-    return await Sensor.find();
+    const sensors = await Sensor.find({}, { id: 1, _id: 0 });
+    return sensors.map(sensor => sensor.id);
 };
