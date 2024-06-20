@@ -12,6 +12,10 @@ export const secretKey = "this-is-the-secret-key";
 export const authMiddleware = (role: string) => (req: CustomRequest, res: Response, next: NextFunction) =>
     authenticateToken(req, res, next, role);
 
+interface DecodedToken {
+    mail: string;
+}
+
 export const authenticateToken = async (req: CustomRequest, res: Response, next: NextFunction, role: string) => {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];
@@ -19,23 +23,28 @@ export const authenticateToken = async (req: CustomRequest, res: Response, next:
         return next(new UnauthorizedError('Access denied. No token provided.'));
     } else {
         try {
-            jwt.verify(token, secretKey, async (err, decoded: any) => { // SACAR ANY, POR AHORA NO SE PUEDE
-                if (err) {
-                    console.log('Token verification error:', err.message);
-                    return next(new UnauthorizedError('Invalid token'));
-                } else {
-                    req.user = decoded?.mail;
-                    console.log('Decoded token:', decoded);
-                    try {
-                        const userRole = await authenticateSession(token, req.user?.toString(), next);
-                        if (userRole !== role) {
-                            return next(new UnauthorizedError('Invalid role. You do not have permission to access this resource.'));
+            const decoded = await new Promise<DecodedToken>((resolve, reject) => {
+                jwt.verify(token, secretKey, async (err, decoded) => {
+                    if (err) {
+                        return next(new UnauthorizedError('Invalid token'));
+                    } else {
+                        if (typeof decoded === 'object' && 'mail' in decoded) {
+                            req.user = decoded?.mail;
+                            console.log('Decoded token:', decoded);
+                            try {
+                                const userRole = await authenticateSession(token, req.user?.toString(), next);
+                                if (userRole !== role) {
+                                    return next(new UnauthorizedError('Invalid role. You do not have permission to access this resource.'));
+                                }
+                                next();
+                            } catch (sessionError) {
+                                return next(new UnauthorizedError('Invalid session token. Please log in again.'));
+                            }
+                        } else {
+                            return next(new UnauthorizedError('Invalid token'));
                         }
-                        next();
-                    } catch (sessionError) {
-                        return next(new UnauthorizedError('Invalid session token. Please log in again.'));
                     }
-                }
+                });
             });
         } catch (error) {
             return next(error);
