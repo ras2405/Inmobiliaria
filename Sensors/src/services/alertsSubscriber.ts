@@ -27,5 +27,5 @@ export const processAlerts = async () => {
 
 export const sendAlert = async (alert: AlertDto) => {
     // enviar por mail
-    console.log(`Sending alert (mail) for sensor ${alert.id}: ${alert.message}`);
+    console.log(`>>> Sending alert (mail) for sensor ${alert.id}: ${alert.message}`);
 };

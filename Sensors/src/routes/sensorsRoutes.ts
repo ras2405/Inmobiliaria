@@ -13,5 +13,6 @@ router.post(
     sensorsController.createSensor
 );
 router.get('/:id', sensorsController.getSensor);
+router.get('/', sensorsController.getAllSensors);
 
 export default router;
