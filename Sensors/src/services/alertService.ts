@@ -1,4 +1,3 @@
-import test from "node:test";
 import { AlertDto } from "../schemas/alert";
 import { SensorValueDto } from "../schemas/sensorValue";
 import { getPriority, getRegex } from "./alertProperties";
@@ -27,6 +26,7 @@ export const isBoolOrNumber = (value: string | number | undefined) => {
 export const evaluateRegex = async (measurement: string, key: SensorKeys, sensor: SensorValueDto, alerts: AlertDto[]) => {
     let value = sensor[key]?.value;
     const regex = sensor[key]?.regex;
+    const unit = sensor[key]?.unit;
 
     value = isBoolOrNumber(value);
 
@@ -34,7 +34,7 @@ export const evaluateRegex = async (measurement: string, key: SensorKeys, sensor
         const regexExp = new RegExp(regex as string);
         testRegex(measurement, value, regexExp, alerts, sensor.id);
     } else if (value) {
-        getRegex(measurement).then(alertRegex => {
+        getRegex(unit).then(alertRegex => {
             testRegex(measurement, value, alertRegex, alerts, sensor.id);
         });
     }
