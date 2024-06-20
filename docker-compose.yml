@@ -1,0 +1,74 @@
+version: "3.1"
+
+services:
+  mysql-main:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    ports:
+      - "${MYSQL_PORT}:${MYSQL_PORT}"
+    volumes:
+      - mysql-main-data:/var/lib/mysql
+    networks:
+      - my-network
+
+  mysql-login:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: ${LOGIN_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${LOGIN_DATABASE}
+    ports:
+      - "${LOGIN_PORT}:${MYSQL_PORT}"
+    volumes:
+      - mysql-login-data:/var/lib/mysql
+    networks:
+      - my-network
+
+  mongo:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    ports:
+      - "${MONGO_PORT}:${MONGO_PORT}"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - my-network
+
+  redis:
+    image: redis:latest
+    command: redis-server
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    volumes:
+      - redis-data:/data
+    networks:
+      - my-network
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+      - "${RABBITMQ_STANDARD_PORT}:${RABBITMQ_STANDARD_PORT}" # Puerto estándar de RabbitMQ
+      - "${RABBITMQ_INTERFACE_PORT}:${RABBITMQ_INTERFACE_PORT}" # Puerto de la interfaz web de administración
+    environment:
+      RABBITMQ_DEFAULT_USER: "${RABBITMQ_DEFAULT_USER}"
+      RABBITMQ_DEFAULT_PASS: "${RABBITMQ_DEFAULT_PASS}"
+    volumes:
+      - "rabbitmq_data:/var/lib/rabbitmq"
+      - "rabbitmq_log:/var/log/rabbitmq"
+    networks:
+      - my-network
+
+volumes:
+  mysql-main-data:
+  mysql-login-data:
+  mongo-data:
+  redis-data:
+  rabbitmq_data:
+  rabbitmq_log:
+
+networks:
+  my-network:
+    driver: bridge

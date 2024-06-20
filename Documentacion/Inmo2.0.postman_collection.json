@@ -1,0 +1,959 @@
+{
+	"info": {
+		"_postman_id": "57fa95b7-7a36-41d6-b6b9-3f442650a2ee",
+		"name": "Inmo2.0",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29475293",
+		"_collection_link": "https://arquitectura-de-software.postman.co/workspace/Arquitectura-de-Software-Worksp~d701ef1d-b675-4a92-a3c3-869fe42e9a5a/collection/29475293-57fa95b7-7a36-41d6-b6b9-3f442650a2ee?action=share&source=collection_link&creator=29475293"
+	},
+	"item": [
+		{
+			"name": "Properties",
+			"item": [
+				{
+					"name": "Create property",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "pictures",
+									"type": "file",
+									"src": "postman-cloud:///1ef269e8-46e1-45b0-8cf8-27815f738b04"
+								},
+								{
+									"key": "pictures",
+									"type": "file",
+									"src": "postman-cloud:///1ef269e8-46e1-45b0-8cf8-27815f738b04"
+								},
+								{
+									"key": "pictures",
+									"type": "file",
+									"src": "postman-cloud:///1ef269e8-46e1-45b0-8cf8-27815f738b04"
+								},
+								{
+									"key": "pictures",
+									"type": "file",
+									"src": "postman-cloud:///1ef269e8-46e1-45b0-8cf8-27815f738b04"
+								},
+								{
+									"key": "name",
+									"value": "Property Name",
+									"type": "text"
+								},
+								{
+									"key": "adults",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "kids",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "beds",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "singleBeds",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "ac",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "wifi",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "garage",
+									"value": "true",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "beachDistance",
+									"value": "100",
+									"type": "text"
+								},
+								{
+									"key": "state",
+									"value": "SC Santa Catarina",
+									"type": "text"
+								},
+								{
+									"key": "balneario",
+									"value": "Praia do Rosa",
+									"type": "text"
+								},
+								{
+									"key": "neighborhood",
+									"value": "Barrio",
+									"type": "text"
+								},
+								{
+									"key": "pictures",
+									"type": "file",
+									"src": "/C:/Users/Usuario/Escritorio/Facultad/Arquitectura Software/3000x2000-px-landscape-1071572.jpg",
+									"disabled": true
+								},
+								{
+									"key": "pictures",
+									"type": "file",
+									"src": "/C:/Users/Usuario/Escritorio/Facultad/Arquitectura Software/RAT2.pdf",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{main-url}}/api/properties",
+							"host": [
+								"{{main-url}}"
+							],
+							"path": [
+								"api",
+								"properties"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get image",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{main-url}}/uploads/1717976207185-307378465.jpg",
+							"host": [
+								"{{main-url}}"
+							],
+							"path": [
+								"uploads",
+								"1717976207185-307378465.jpg"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Sensor to Property",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"sensorId\": \"1\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{main-url}}/api/properties/1",
+							"host": [
+								"{{main-url}}"
+							],
+							"path": [
+								"api",
+								"properties",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "FilteredRequest",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{main-url}}/api/properties?startDate=2024-06-25&endDate=2024-06-25&page=2",
+							"host": [
+								"{{main-url}}"
+							],
+							"path": [
+								"api",
+								"properties"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2024-06-25"
+								},
+								{
+									"key": "endDate",
+									"value": "2024-06-25"
+								},
+								{
+									"key": "adults",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "ac",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Initiate property payment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"amount\": 400.00,\r\n    \"cardNumber\":  \"4111111111111111\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{main-url}}/api/properties/1/pay",
+							"host": [
+								"{{main-url}}"
+							],
+							"path": [
+								"api",
+								"properties",
+								"1",
+								"pay"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Property payment callback",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n    \"status\": \"success\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{main-url}}/api/properties/1/payment-callback",
+							"host": [
+								"{{main-url}}"
+							],
+							"path": [
+								"api",
+								"properties",
+								"1",
+								"payment-callback"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current Sensor State",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{main-url}}/api/properties/2/sensors",
+							"host": [
+								"{{main-url}}"
+							],
+							"path": [
+								"api",
+								"properties",
+								"2",
+								"sensors"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "Login Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var res = pm.response.json();\r",
+									"pm.environment.set('token', res.data.token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"mail\": \"johndoe@example.com\",\r\n    \"password\":\"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{main-url}}/api/login",
+							"host": [
+								"{{main-url}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Operator",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var res = pm.response.json();\r",
+									"pm.environment.set('token', res.data.token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"mail\": \"janesmith@example.com\",\r\n    \"password\":\"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{main-url}}/api/login",
+							"host": [
+								"{{main-url}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Owner",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var res = pm.response.json();\r",
+									"pm.environment.set('token', res.data.token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"mail\": \"alice.johnson@example.com\",\r\n    \"password\":\"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{main-url}}/api/login",
+							"host": [
+								"{{main-url}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Tenant",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var res = pm.response.json();\r",
+									"pm.environment.set('token', res.data.token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"mail\": \"bob.brown@example.com\",\r\n    \"password\":\"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{main-url}}/api/login",
+							"host": [
+								"{{main-url}}"
+							],
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Availabilities",
+			"item": [
+				{
+					"name": "Create availability",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"propertyId\": 1,\r\n    \"startDate\": \"2024-01-21\",\r\n    \"endDate\": \"2024-012-25\",\r\n    \"isAvailable\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{main-url}}/api/availabilities",
+							"host": [
+								"{{main-url}}"
+							],
+							"path": [
+								"api",
+								"availabilities"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete availability",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{main-url}}/api/availabilities/4",
+							"host": [
+								"{{main-url}}"
+							],
+							"path": [
+								"api",
+								"availabilities",
+								"4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Bookings",
+			"item": [
+				{
+					"name": "Create booking",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"document\": \"123456789\",\r\n    \"documentType\": \"passport\",\r\n    \"name\": \"Johns\",\r\n    \"surname\": \"Does\",\r\n    \"mail\": \"john.doe@example.com\",\r\n    \"phone\": \"+1234567890\",\r\n    \"country\": \"USA\",\r\n    \"state\": \"California\",\r\n    \"adults\": 1,\r\n    \"kids\": 1,\r\n    \"propertyId\": 1,\r\n    \"startDate\": \"2024-06-25\",\r\n    \"endDate\": \"2024-06-26\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{main-url}}/api/bookings",
+							"host": [
+								"{{main-url}}"
+							],
+							"path": [
+								"api",
+								"bookings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get bookings",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{main-url}}/api/bookings?startDate=\"2024-06-21\"&endDate=\"2024-06-26\"&status=pending&propertyId=1&mail=john.doe@example.com",
+							"host": [
+								"{{main-url}}"
+							],
+							"path": [
+								"api",
+								"bookings"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "\"2024-06-21\""
+								},
+								{
+									"key": "endDate",
+									"value": "\"2024-06-26\""
+								},
+								{
+									"key": "status",
+									"value": "pending"
+								},
+								{
+									"key": "propertyId",
+									"value": "1"
+								},
+								{
+									"key": "mail",
+									"value": "john.doe@example.com"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Initiate booking payment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"amount\": 400.00,\r\n    \"cardNumber\":  \"4111111111111111\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{main-url}}/api/bookings/1/pay",
+							"host": [
+								"{{main-url}}"
+							],
+							"path": [
+								"api",
+								"bookings",
+								"1",
+								"pay"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Property booking callback",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n    \"status\": \"success\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{main-url}}/api/bookings/1/payment-callback",
+							"host": [
+								"{{main-url}}"
+							],
+							"path": [
+								"api",
+								"bookings",
+								"1",
+								"payment-callback"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Property booking refund callback",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \r\n    \"status\": \"success\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{main-url}}/api/bookings/1/refund-callback",
+							"host": [
+								"{{main-url}}"
+							],
+							"path": [
+								"api",
+								"bookings",
+								"1",
+								"refund-callback"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get own booking",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"mail\": \"john.doe@example.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{main-url}}/api/bookings/2/own",
+							"host": [
+								"{{main-url}}"
+							],
+							"path": [
+								"api",
+								"bookings",
+								"2",
+								"own"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refund request",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{main-url}}/api/bookings/1/refund?cardNumber=4111111111111111",
+							"host": [
+								"{{main-url}}"
+							],
+							"path": [
+								"api",
+								"bookings",
+								"1",
+								"refund"
+							],
+							"query": [
+								{
+									"key": "cardNumber",
+									"value": "4111111111111111"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Cancel booking",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"mail\": \"john.doe@example.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{main-url}}/api/bookings/2/cancel",
+							"host": [
+								"{{main-url}}"
+							],
+							"path": [
+								"api",
+								"bookings",
+								"2",
+								"cancel"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Sensors",
+			"item": [
+				{
+					"name": "Create Sensor",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": \"1\",\r\n    \"description\": \"this is a description\",\r\n    \"series\": \"aB3dE5gH7iJ9kL0mNoPqRsTuVwXyZ1234567890abcdef\",\r\n    \"brand\": \"Sensor Brand\",\r\n    \"address\": \"this is the address\",\r\n    \"date\": \"2024-06-01\",\r\n    \"type\": \"temperature_humidity\",\r\n    \"observableProperties\": \"/data/temperature\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{sensors-url}}/api/sensors",
+							"host": [
+								"{{sensors-url}}"
+							],
+							"path": [
+								"api",
+								"sensors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Sensor",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{sensors-url}}/api/sensors/1",
+							"host": [
+								"{{sensors-url}}"
+							],
+							"path": [
+								"api",
+								"sensors",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Payment",
+			"item": [
+				{
+					"name": "New payment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"amount\": 400,\r\n    \"cardNumber\": \"4111111111111111\",\r\n    \"callback\": \"http://localhost:3001/api/properties/1/payment-callback\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{payment-url}}/api/payments",
+							"host": [
+								"{{payment-url}}"
+							],
+							"path": [
+								"api",
+								"payments"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reports",
+			"item": [
+				{
+					"name": "Get earnings",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{main-url}}/api/reports/1/earnings?propertyId=1&startDate=2024-04-01&endDate=2024-08-01",
+							"host": [
+								"{{main-url}}"
+							],
+							"path": [
+								"api",
+								"reports",
+								"1",
+								"earnings"
+							],
+							"query": [
+								{
+									"key": "propertyId",
+									"value": "1"
+								},
+								{
+									"key": "startDate",
+									"value": "2024-04-01"
+								},
+								{
+									"key": "endDate",
+									"value": "2024-08-01"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "main-url",
+			"value": "localhost:3001",
+			"type": "string"
+		},
+		{
+			"key": "sensors-url",
+			"value": "localhost:3002",
+			"type": "string"
+		},
+		{
+			"key": "payment-url",
+			"value": "localhost:3004",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
