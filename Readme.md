@@ -53,6 +53,20 @@ REFUND_PERCENTAGE=40
 ```
 
 ```
-npm i -g pm2
-npm i -g ts-node
+docker-compose up -d
+```
+
+Ejecución del proyecto con pm2
+```
+pm2 start ecosystem.config.js
+```
+
+Ejecución del proyecto con nodemon (desarrollo, en cada servicio)
+```
+npm run dev
+```
+
+Seeds de la db de users
+```
+npm run seed
 ```
