@@ -24,6 +24,7 @@ interface PropertyAttributes {
     bookings?: BookingInstance[];
     status?: PaymentStatus;
     createdAt?: Date;
+    price?: number;
 }
 
 interface PropertyCreationAttributes extends Optional<PropertyAttributes, 'id'> { }
@@ -90,7 +91,10 @@ const Property = sequelize.define<PropertyInstance>('Property', {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
         allowNull: false
-    }
+    },
+    price: {
+        type: DataTypes.INTEGER
+    },
 }, {
     tableName: 'Properties',
     timestamps: false

@@ -8,12 +8,14 @@ import { Property } from "../models/Property";
 import { BookingDto } from "../schemas/booking";
 import { ServiceError } from "../exceptions/ServiceError";
 import { PayDto } from "../schemas/pay";
-import { PaymentStatus } from "../constants/payments";
+import { BookingStatus, PaymentStatus } from "../constants/payments";
 import { PaymentCallbackDto } from "../schemas/paymentCallback";
 import { BookingFilterDto } from "../schemas/bookingFilter";
 import { filterByString, filterByDifferentNumber } from "../utils/filterFunctions";
 import { sendEmail } from "../utils/sendEmail";
 import { BookingMailDto } from "../schemas/bookingIdMail";
+import { addDaysToDate, getTodayDate, parseDate } from "../utils/dateUtils";
+import { daysAllowedToCancelBooking } from "../constants/refund";
 
 export const createBooking = async (bookingDto: BookingDto) => {
 
@@ -79,10 +81,10 @@ export const initiatePayment = async (payDto: PayDto) => {
         if (!booking) {
             throw new NotFoundError('Booking not found');
         }
-        if (booking.status === PaymentStatus.ACTIVE) {
+        if (booking.status === BookingStatus.ACTIVE) {
             throw new BadRequestError('An active payment already exists');
         }
-        if (booking.status === PaymentStatus.CANCELLED) {
+        if (booking.status === BookingStatus.CANCELLED) {
             throw new BadRequestError('Cancelled due to non-payment');
         }
 
@@ -110,7 +112,7 @@ export const paymentCallback = async (paymentCallbackDto: PaymentCallbackDto) =>
     try {
         if (paymentCallbackDto.status === 'success') {
             const bookingUpdate = await Booking.update(
-                { status: PaymentStatus.ACTIVE },
+                { status: BookingStatus.ACTIVE },
                 { where: { id: paymentCallbackDto.id } }
             );
 
@@ -164,10 +166,45 @@ export const getOwnBooking = async (bookingId:number,bookingMailDto: BookingMail
     });
 
     if (!bookings) {
-        throw new NotFoundError("No properties were found");
+        throw new NotFoundError("Booking not found");
     }
 
     return bookings;
+};
+
+export const cancelBooking = async (bookingId:number, bookingMailDto:BookingMailDto) => {
+
+    if(bookingId <= 0){
+        throw new BadRequestError("Id must be a positive number");
+    }
+
+    let booking = await Booking.findOne({
+        where: {
+            id: bookingId,
+            mail: bookingMailDto.mail,
+            status: {
+                [Op.or]: [BookingStatus.ACTIVE, BookingStatus.PENDING]
+            }
+        }
+    });
+
+    if(!booking){
+        throw new NotFoundError("Booking not found");
+    }
+    if(!booking.createdAt){
+        throw new ServiceError("Something went wrong checking the date in which the booking was created");
+    }
+
+    const tooLateToCancel = (getTodayDate() >= addDaysToDate(booking.createdAt,daysAllowedToCancelBooking))
+                            || (getTodayDate() >= parseDate(booking.startDate));
+    if(tooLateToCancel){
+        throw new BadRequestError("You can't cancel this booking. The allowed period of time to cancel your booking has ended.");
+    }else{
+        booking.status = BookingStatus.CANCELLED_BY_TENANT;
+        await booking.save();
+    }
+
+    return booking;
 };
 
 
