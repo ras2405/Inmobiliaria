@@ -5,24 +5,27 @@ import Sensor from "../models/Sensor";
 import { SensorDto } from "../schemas/sensor";
 import { sensorValueSchema } from "../schemas/sensorValue";
 import { saveSensorData } from "../config/sensorWriter";
+import { BadRequestError } from "../exceptions/BadRequestError";
 
 export const createSensor = async (sensorDto: SensorDto) => {
     try {
-        const currentFile = loadSensorData(path.resolve(sensorDto.observableProperties));
-
-        console.log("DESPUES DE BUSCAR PATH");
-        const fileData = sensorValueSchema.parse(currentFile);
-        console.log("ANTES DE CAMBIAR PATH");
-
-        const filePath = path.resolve(__dirname, `../../files/${sensorDto.id}.json`);
-        await saveSensorData(filePath, fileData);
-
-        console.log("DESPUES DE CAMBIAR PATH");
-        return await Sensor.create(sensorDto);
+        await loadSensorData(path.resolve(sensorDto.observableProperties));
     } catch (error) {
-        throw error;
+        throw new BadRequestError("File not found in the provided path");
     }
 
+    try {
+        const currentFile = await loadSensorData(path.resolve(sensorDto.observableProperties));
+        const fileData = sensorValueSchema.parse(currentFile);
+
+        await saveSensorData(fileData, `${sensorDto.id}.json`);
+
+        const sensorFullPath = path.resolve(__dirname, `../../files/${sensorDto.id}.json`);
+        sensorDto.observableProperties = sensorFullPath;
+        return await Sensor.create(sensorDto);
+    } catch (error) {
+        throw new BadRequestError('Formating error in the JSON file');
+    }
 };
 
 export const findSensorById = async (sensorId: string) => {

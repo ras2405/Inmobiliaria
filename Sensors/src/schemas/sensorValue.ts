@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const sensorValueSchema = z.object({
-    id: z.string({ message: 'id must be a string' }),
+    id: z.string({ message: 'Id must be a string' }),
 
     humidity: z.object({
         unit: z.enum(['percentage', 'boolean'], { message: "Unit must be a 'percentage' or a 'boolean' " }).optional().default('percentage'),
