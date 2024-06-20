@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const directoryPath = 'C:\\Users\\celes\\Documents\\.Arquitectura Software\\242493-276712-281651\\Sensors\\files';
+const directoryPath = path.resolve(__dirname, '../../../files');
 const testFilePath = path.join(directoryPath, 'test.txt');
 
 try {
