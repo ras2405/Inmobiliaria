@@ -15,7 +15,6 @@ import { filterByString, filterByDifferentNumber } from "../utils/filterFunction
 import { sendEmail } from "../utils/sendEmail";
 
 export const createBooking = async (bookingDto: BookingDto) => {
-
     try {
         const property = await Property.findOne({
             where: {
@@ -28,13 +27,14 @@ export const createBooking = async (bookingDto: BookingDto) => {
             {
                 model: Booking,
                 as: 'bookings',
-                where: {
-                    status: {
-                        [Op.ne]: PaymentStatus.CANCELLED
-                    }
-                }
             }]
         });
+
+        if (property) {
+            property.bookings = property.bookings?.filter(
+                booking => booking.status !== PaymentStatus.CANCELLED
+            );
+        }
 
         if (!property) {
             throw new NotFoundError("Incorrect property id");

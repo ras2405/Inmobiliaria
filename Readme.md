@@ -48,3 +48,8 @@ EMAIL_USER=inmo.2024@outlook.com
 EMAIL_PASS=1234.Inmo
 
 ```
+
+```
+npm i -g pm2
+npm i -g ts-node
+```
