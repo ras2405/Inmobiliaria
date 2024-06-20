@@ -26,7 +26,6 @@ export const createBooking = async (bookingDto: BookingDto) => {
             include: [{
                 model: Availability,
                 as: 'availabilities',
-                required: false
             },
             {
                 model: Booking,
