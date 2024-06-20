@@ -51,3 +51,8 @@ EMAIL_PASS=1234.Inmo
 DAYS_ALLOWED_TO_CANCEL_BOOKING=20
 REFUND_PERCENTAGE=40
 ```
+
+```
+npm i -g pm2
+npm i -g ts-node
+```
