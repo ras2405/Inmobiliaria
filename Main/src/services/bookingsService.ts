@@ -20,8 +20,6 @@ import { RefundDto } from "../schemas/refundSchema";
 export const createBooking = async (bookingDto: BookingDto) => {
 
     try {
-        console.log(bookingDto.propertyId);
-
         const property = await Property.findOne({
             where: {
                 id: bookingDto.propertyId,

@@ -7,9 +7,6 @@ import { BookingStatus } from "../constants/payments";
 import { NotFoundError } from "../exceptions/NotFoundError";
 
 export const getEarnings = async (earningsDto: EarningsDto,propertyId:number) => {
-    console.log(propertyId);
-    console.log(earningsDto.startDate);
-    console.log(earningsDto.endDate);
     let property = await Property.findOne({
         where: { 
             id: propertyId
@@ -35,7 +32,7 @@ export const getEarnings = async (earningsDto: EarningsDto,propertyId:number) =>
     if(!property){
         throw new NotFoundError("Property not found");
     }
-    console.log("HOLA");
+
     const bookings: BookingInstance[] = property?.bookings ?? [];
     let total = 0;
     if(bookings){
