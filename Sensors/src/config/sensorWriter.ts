@@ -1,13 +1,11 @@
 import * as fs from 'fs';
 import path from 'path';
-import { SensorDto } from '../schemas/sensor';
 import { SensorValueDto } from '../schemas/sensorValue';
 
 const directoryPath = path.join(__dirname, '../../../files');
 
 export const saveSensorData = async (data: SensorValueDto, fileName: string): Promise<void> => {
     try {
-        // const dir = path.dirname(filePath);
         if (!fs.existsSync(directoryPath)) {
             fs.mkdirSync(directoryPath, { recursive: true });
         }

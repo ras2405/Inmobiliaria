@@ -11,8 +11,6 @@ let sensors: string[] = [];
 export const simConstructor = async (rate: number, sensorsList: string[]) => {
     requestRatePerMinute = rate;
     sensors = sensorsList;
-    console.log("Simulator initialized with request rate per minute:", requestRatePerMinute);
-    console.log("Simulator initialized with sensors:", sensors);
 };
 
 export const getUpdatedValue = (value: string | number) => {
@@ -87,6 +85,8 @@ export const start = async () => {
     if (intervalId) {
         console.log("Simulator is already running");
         return;
+    } else {
+        console.log("Starting Sensor Simulator...");
     }
 
     const interval = (60 / requestRatePerMinute) * 1000;
@@ -126,7 +126,6 @@ export const startSimulation = async () => {
     try {
         const sensors = await axios.get('http://localhost:3002/api/sensors');
         const sensorsId = sensors.data.data.map((sensor: any) => sensor.toString());;
-        console.log(">>>>>>>>>>>>", sensorsId);
 
         await simConstructor(12, sensorsId);
         await start();
