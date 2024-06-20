@@ -33,7 +33,9 @@ export const createBooking = async (bookingDto: BookingDto) => {
                 as: 'bookings',
                 where: {
                     status: {
-                        [Op.ne]: PaymentStatus.CANCELLED
+                        [Op.ne]: [BookingStatus.CANCELLED_BY_TENANT,
+                                BookingStatus.CANCELLED_BY_TENANT,
+                                BookingStatus.CANCELLED]
                     }
                 }
             }]
@@ -59,6 +61,7 @@ export const createBooking = async (bookingDto: BookingDto) => {
             throw new BadRequestError("The period of time selected is not available for booking");
         }
 
+        bookingDto.price = property.price;
         const returnBooking = await Booking.create(bookingDto);
         if (returnBooking) {
             notifyBookingToAdminAndOwner(bookingDto);
@@ -84,7 +87,7 @@ export const initiatePayment = async (payDto: PayDto) => {
         if (booking.status === BookingStatus.ACTIVE) {
             throw new BadRequestError('An active payment already exists');
         }
-        if (booking.status === BookingStatus.CANCELLED) {
+        if (booking.status === BookingStatus.CANCELLED_NON_PAYMENT) {
             throw new BadRequestError('Cancelled due to non-payment');
         }
 
@@ -197,7 +200,7 @@ export const cancelBooking = async (bookingId:number, bookingMailDto:BookingMail
 
     const tooLateToCancel = (getTodayDate() >= addDaysToDate(booking.createdAt,daysAllowedToCancelBooking))
                             || (getTodayDate() >= parseDate(booking.startDate));
-    if(tooLateToCancel){
+    if(tooLateToCancel && booking.status === BookingStatus.ACTIVE){
         throw new BadRequestError("You can't cancel this booking. The allowed period of time to cancel your booking has ended.");
     }else{
         booking.status = BookingStatus.CANCELLED_BY_TENANT;

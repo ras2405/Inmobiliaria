@@ -19,6 +19,8 @@ interface BookingAttributes {
     startDate: Date;
     endDate: Date;
     createdAt?: Date;
+    price?: number;
+    paymentDone?: boolean;
 }
 
 interface BookingCreationAttributes extends Optional<BookingAttributes, 'id'> { }
@@ -133,7 +135,14 @@ const Booking = sequelize.define<BookingInstance>('bookings', {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
         allowNull: false
-    }
+    },
+    price: {
+        type: DataTypes.INTEGER
+    },
+    paymentDone: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
+    },
 }, {
     tableName: 'Bookings',
     timestamps: false
