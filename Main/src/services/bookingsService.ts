@@ -64,9 +64,6 @@ export const createBooking = async (bookingDto: BookingDto) => {
 
         bookingDto.price = property.price;
         const returnBooking = await Booking.create(bookingDto);
-        if (returnBooking) {
-            notifyBookingToAdminAndOwner(bookingDto);
-        }
 
         sendEmail(
             'ADMIN & OWNER: New booking',
@@ -192,10 +189,6 @@ export const refundCallback = async (paymentCallbackDto: PaymentCallbackDto) => 
     } catch (error) {
         throw error;
     }
-};
-
-const notifyBookingToAdminAndOwner = async (bookingDto: BookingDto) => {
-    console.info("Notificar a Admin y a Owner");
 };
 
 export const findPropertyBookings = async (id: number) => {

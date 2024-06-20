@@ -20,6 +20,7 @@ export const createSensor = async (req: Request, res: Response, next: NextFuncti
             status: 'success',
             data: filteredSensor
         });
+        return filteredSensor;
     } catch (error) {
         next(error);
     }
