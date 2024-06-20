@@ -1,50 +1,51 @@
 import { Op, col, fn } from "sequelize";
 import { Availability } from "../models/Availability";
-import { Booking } from "../models/Booking";
+import { Booking, BookingInstance } from "../models/Booking";
 import { Property } from "../models/Property";
 import { EarningsDto } from "../schemas/earnings";
+import { BookingStatus } from "../constants/payments";
+import { NotFoundError } from "../exceptions/NotFoundError";
 
-export const getEarnings = async (earningsDto: EarningsDto) => {
-
-    let properties = await Property.findAll({
+export const getEarnings = async (earningsDto: EarningsDto,propertyId:number) => {
+    console.log(propertyId);
+    console.log(earningsDto.startDate);
+    console.log(earningsDto.endDate);
+    let property = await Property.findOne({
+        where: { 
+            id: propertyId
+        },
         include: [
-            {
-                model: Availability,
-                as: 'availabilities',
-                where: {
-                    endDate: {
-                        [Op.gt]: earningsDto.startDate
-                    },
-                    startDate: {
-                        [Op.lt]: earningsDto.endDate
-                    }
-                },
-                required: false
-            },
             {
                 model: Booking,
                 as: 'bookings',
-                attributes: [
-                    'id', 'document', 'documentType', 'name', 'surname', 
-                    'mail', 'phone', 'country', 'state', 'status', 
-                    'adults', 'kids', 'propertyId', 'startDate', 'endDate', 
-                    'createdAt',
-                    [fn('SUM', col('bookings.price')), 'totalPrice']
-                ],
                 where: {
                     endDate: {
                         [Op.gt]: earningsDto.startDate
                     },
                     startDate: {
                         [Op.lt]: earningsDto.endDate
-                    }
+                    },
+                    status: BookingStatus.ACTIVE
                 },
                 required: false
             }
-        ],
-        group: ['Property.id', 'bookings.id', 'bookings.document', 'bookings.documentType', 'bookings.name', 'bookings.surname', 'bookings.mail', 'bookings.phone', 'bookings.country', 'bookings.state', 'bookings.status', 'bookings.adults', 'bookings.kids', 'bookings.propertyId', 'bookings.startDate', 'bookings.endDate', 'bookings.createdAt']
+        ]
     });
+    
+    if(!property){
+        throw new NotFoundError("Property not found");
+    }
+    console.log("HOLA");
+    const bookings: BookingInstance[] = property?.bookings ?? [];
+    let total = 0;
+    if(bookings){
+        total = bookings.reduce((sum, booking) =>{
+            if(!booking || !booking.price){
+                return sum}
+            return sum + booking.price
+        }, 0);
+    }
 
-    return properties;
+    return {property, total};
 
 }

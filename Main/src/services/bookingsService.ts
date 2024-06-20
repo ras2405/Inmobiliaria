@@ -20,23 +20,27 @@ import { RefundDto } from "../schemas/refundSchema";
 export const createBooking = async (bookingDto: BookingDto) => {
 
     try {
+        console.log(bookingDto.propertyId);
+
         const property = await Property.findOne({
             where: {
                 id: bookingDto.propertyId,
             },
             include: [{
                 model: Availability,
-                as: 'availabilities'
+                as: 'availabilities',
+                required: false
             },
             {
                 model: Booking,
                 as: 'bookings',
                 where: {
                     status: {
-                        [Op.ne]: [BookingStatus.CANCELLED_BY_TENANT,
+                        [Op.notIn]: [BookingStatus.CANCELLED_BY_TENANT,
                                 BookingStatus.CANCELLED_BY_TENANT]
                     }
-                }
+                },
+                required: false
             }]
         });
 

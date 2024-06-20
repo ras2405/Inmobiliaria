@@ -5,14 +5,15 @@ import { EarningsDto } from '../schemas/earnings';
 
 export const getEarnings = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const id = parseInt(req.params.propertyId);
+        const id = parseInt(req.params.id);
+        console.log("HOOOOOOOOOOOOOOOOOOOOOOOOO")
+        console.log(id);
         const earningsDto: EarningsDto = {
             startDate: new Date(req.query.startDate as string),
             endDate: new Date(req.query.endDate as string),
-            propertyId: id
         };
         
-        const earnings = await reportsService.getEarnings(earningsDto);
+        const earnings = await reportsService.getEarnings(earningsDto,id);
         res.status(200).json({
             status: 'success',
             data: earnings
