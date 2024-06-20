@@ -52,7 +52,7 @@ const main = async () => {
     await processAlerts();
     await filesWatcher();
     await delay(5000);
-    // await startSimulation();
+    await startSimulation();
 };
 
 main();
