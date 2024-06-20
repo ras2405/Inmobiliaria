@@ -78,7 +78,7 @@ export const getBookings = async (req: Request, res: Response, next: NextFunctio
     try {
         const bookingFilterDto: BookingFilterDto = req.query;
         const bookings = await bookingsService.getBookingsAsAdminOperator(bookingFilterDto);
-        res.status(201).json({
+        res.status(200).json({
             status: 'success',
             data: bookings
         });
@@ -91,10 +91,24 @@ export const getOwnBooking = async (req: Request, res: Response, next: NextFunct
     try {
         const bookingMailDto: BookingMailDto = req.body;
         const id = parseInt(req.params.id);
-        const bookings = await bookingsService.getOwnBooking(id,bookingMailDto);
-        res.status(201).json({
+        const booking = await bookingsService.getOwnBooking(id,bookingMailDto);
+        res.status(200).json({
             status: 'success',
-            data: bookings
+            data: booking
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const cancelBooking = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const bookingMailDto: BookingMailDto = req.body;
+        const id = parseInt(req.params.id);
+        const booking = await bookingsService.cancelBooking(id,bookingMailDto);
+        res.status(200).json({
+            status: 'success',
+            data: booking
         });
     } catch (error) {
         next(error);
