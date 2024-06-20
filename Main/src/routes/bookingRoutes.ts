@@ -24,8 +24,9 @@ router.put(
     bookingsController.paymentCallback
 );
 router.get('/', validateParams(bookingFilterSchema), bookingsController.getBookings);
-router.get('/:id/own/',validate(bookingMail), bookingsController.getOwnBooking);
-router.post('/:id/refund/',validate(refundSchema),bookingsController.initiateRefund);
-router.put('/:id/refund-callback/',validate(paymentCallbackSchema),bookingsController.refundCallback);
+router.get('/:id/own',validate(bookingMail), bookingsController.getOwnBooking);
+router.post('/:id/refund',validate(refundSchema),bookingsController.initiateRefund);
+router.put('/:id/refund-callback',validate(paymentCallbackSchema),bookingsController.refundCallback);
+router.post('/:id/cancel',validate(bookingMail),bookingsController.cancelBooking);
 
 export default router;
