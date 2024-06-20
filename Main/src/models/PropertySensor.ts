@@ -16,7 +16,8 @@ const PropertySensor = sequelize.define<PropertySensorInstance>('PropertySensor'
     },
     sensorId: {
         type: DataTypes.STRING,
-        primaryKey: true
+        primaryKey: true,
+        unique: true
     }
 }, {
     tableName: 'PropertySensors',

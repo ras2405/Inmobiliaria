@@ -93,3 +93,18 @@ export const assignSensor = async (req: Request, res: Response, next: NextFuncti
         next(error);
     }
 };
+
+export const getSensors = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const propertyId = parseInt(req.params.id);
+        const sensors = await propertiesService.getSensors(propertyId);
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Click on the route to see the sensors of the property.',
+            data: sensors
+        });
+    } catch (error) {
+        next(error);
+    }
+};

@@ -16,6 +16,10 @@ import { Op } from "sequelize";
 import { filterByBoolean, filterByString, filterByGreaterThan, filterByLessThan } from "../utils/filterFunctions";
 import { sendEmail } from "../utils/sendEmail";
 import { getTodayDate, addDaysToDate, parseDate, isOneDayLater } from "../utils/dateUtils";
+import { loadSensorData } from "../../../Sensors/src/config/sensorLoader";
+import { sensorValueSchema } from "../../../Sensors/src/schemas/sensorValue";
+import { SensorKeys } from "../../../Sensors/src/services/alertService";
+import path from "path";
 
 export const findAllProperties = async () => {
     return await Property.findAll();
@@ -301,3 +305,55 @@ function parseBool(value: string | boolean): boolean {
     }
     return false;
 }
+
+export const getSensors = async (id: number) => {
+    try {
+        const propertyId = await findPropertyById(id);
+
+        if (!propertyId) {
+            throw new NotFoundError('Property not found');
+        }
+
+        const returnedSensors: SensorData[] = [];
+        const sensors = await PropertySensor.findAll({
+            where: {
+                propertyId: propertyId.id
+            }
+        });
+
+        if (!sensors || sensors.length === 0) {
+            throw new NotFoundError('No sensors found for this property');
+        }
+
+        for (const sensor of sensors) {
+            const response = await axios.get(`http://localhost:3002/api/sensors/${sensor.sensorId}`);
+            const currentSensor = response.data;
+
+            const observableProperties = currentSensor.data.observableProperties;
+
+            const normalized = path.normalize(observableProperties);
+
+            const cleanPath = normalized.replace(/\\\\/g, '\\');
+
+            returnedSensors.push({
+                sensorId: sensor.sensorId,
+                value: cleanPath,
+            });
+
+            console.info("Property's Sensor Path: ", cleanPath);
+        }
+        return returnedSensors;
+    } catch (error) {
+        console.error('Error in getSensors function:', error);
+        if (error instanceof NotFoundError) {
+            throw error;
+        } else {
+            throw new NotFoundError('Property not found');
+        }
+    }
+};
+
+type SensorData = {
+    sensorId: string;
+    value: string;
+};

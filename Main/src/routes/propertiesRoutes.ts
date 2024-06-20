@@ -20,6 +20,7 @@ router.get(
     propertiesController.getProperties
 );
 router.get('/:id', propertiesController.getProperty);
+router.get('/:id/sensors', propertiesController.getSensors);
 router.post(
     '/',
     upload.array('pictures'),

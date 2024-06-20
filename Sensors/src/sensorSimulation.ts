@@ -83,10 +83,10 @@ export const generateSensorData = (sensorId: string, existingSensorData?: Partia
 
 export const start = async () => {
     if (intervalId) {
-        console.log("Simulator is already running");
+        console.info("Simulator is already running");
         return;
     } else {
-        console.log("Starting Sensor Simulator...");
+        console.info("Starting Sensor Simulator...");
     }
 
     const interval = (60 / requestRatePerMinute) * 1000;
@@ -99,7 +99,7 @@ export const start = async () => {
                 const data = generateSensorData(sensorId, fileData);
                 const validatedData = sensorValueSchema.parse(data);
                 await saveSensorData(validatedData, `${sensorId}.json`);
-
+                console.info(`New Sensor data written to ${filePath}:`, data);
             } catch (error) {
                 console.error(`Error writing data to ${filePath}:`, error);
             }
@@ -130,6 +130,6 @@ export const startSimulation = async () => {
         await simConstructor(12, sensorsId);
         await start();
     } catch (error) {
-        console.log("Failed to start simulation:", error);
+        console.error("Failed to start simulation:", error);
     }
 };

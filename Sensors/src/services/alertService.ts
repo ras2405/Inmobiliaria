@@ -2,7 +2,7 @@ import { AlertDto } from "../schemas/alert";
 import { SensorValueDto } from "../schemas/sensorValue";
 import { getPriority, getRegex } from "./alertProperties";
 
-type SensorKeys = Exclude<keyof SensorValueDto, 'id'>;
+export type SensorKeys = Exclude<keyof SensorValueDto, 'id'>;
 
 export const checkAlerts = async (sensor: SensorValueDto) => {
     const alerts: AlertDto[] = [];

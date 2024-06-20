@@ -21,7 +21,7 @@ export const createSensor = async (sensorDto: SensorDto) => {
         await saveSensorData(fileData, `${sensorDto.id}.json`);
 
         const sensorFullPath = path.resolve(__dirname, `../../files/${sensorDto.id}.json`);
-        sensorDto.observableProperties = sensorFullPath;
+        sensorDto.observableProperties = path.normalize(sensorFullPath);
         return await Sensor.create(sensorDto);
     } catch (error) {
         throw new BadRequestError('Formating error in the JSON file');

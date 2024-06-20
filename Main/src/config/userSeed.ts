@@ -90,7 +90,7 @@ const seedUsers = async () => {
         await User.create(user);
     }
 
-    console.log('Datos de usuarios insertados correctamente');
+    console.info('Datos de usuarios insertados correctamente');
     process.exit(0);
 };
 
