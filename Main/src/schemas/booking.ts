@@ -18,4 +18,9 @@ export const bookingSchema = z.object({
         .transform((date) => new Date(date)),
 });
 
-export type BookingDto = z.infer<typeof bookingSchema>;
+export const bookingWithPrice = bookingSchema.extend({
+    price: z.number().positive()
+});
+
+
+export type BookingDto = z.infer<typeof bookingWithPrice>;

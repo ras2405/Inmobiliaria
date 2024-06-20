@@ -39,6 +39,9 @@ export const propertySchema = z.object({
     state: z.string(),
     balneario: z.string(),
     neighborhood: z.string(),
+    price: z.string()
+        .transform((val) => parseInt(val))
+        .refine((val) => val >= 1, { message: 'The price must be a positive number.' }),
 });
 
 export const extendedPropertySchema = propertySchema.extend({

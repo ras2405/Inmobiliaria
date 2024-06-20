@@ -7,6 +7,9 @@ import { paymentCallbackSchema } from '../schemas/paymentCallback';
 import { validateParams } from '../middlewares/validateParams';
 import { bookingFilterSchema } from '../schemas/bookingFilter';
 import { authMiddleware } from '../middlewares/roleAuth';
+import { bookingMail } from '../schemas/bookingIdMail';
+import { refundSchema } from "../schemas/refundSchema";
+import { initiateRefund } from '../services/bookingsService';
 
 const router = Router();
 router.post('/',
@@ -21,5 +24,8 @@ router.put(
     bookingsController.paymentCallback
 );
 router.get('/', validateParams(bookingFilterSchema), bookingsController.getBookings);
+router.get('/:id/own/',validate(bookingMail), bookingsController.getOwnBooking);
+router.post('/:id/refund/',validate(refundSchema),bookingsController.initiateRefund);
+router.put('/:id/refund-callback/',validate(paymentCallbackSchema),bookingsController.refundCallback);
 
 export default router;

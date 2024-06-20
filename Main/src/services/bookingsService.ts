@@ -8,11 +8,14 @@ import { Property } from "../models/Property";
 import { BookingDto } from "../schemas/booking";
 import { ServiceError } from "../exceptions/ServiceError";
 import { PayDto } from "../schemas/pay";
-import { PaymentStatus } from "../constants/payments";
+import { BookingStatus, PaymentStatus } from "../constants/payments";
 import { PaymentCallbackDto } from "../schemas/paymentCallback";
 import { BookingFilterDto } from "../schemas/bookingFilter";
 import { filterByString, filterByDifferentNumber } from "../utils/filterFunctions";
 import { sendEmail } from "../utils/sendEmail";
+import { BookingMailDto } from "../schemas/bookingIdMail";
+import { addDaysToDate, getTodayDate, parseDate } from "../utils/dateUtils";
+import { RefundDto } from "../schemas/refundSchema";
 
 export const createBooking = async (bookingDto: BookingDto) => {
     try {
@@ -32,7 +35,7 @@ export const createBooking = async (bookingDto: BookingDto) => {
 
         if (property) {
             property.bookings = property.bookings?.filter(
-                booking => booking.status !== PaymentStatus.CANCELLED
+                booking => booking.status !== BookingStatus.CANCELLED_NON_PAYMENT && booking.status !== BookingStatus.CANCELLED_BY_TENANT
             );
         }
 
@@ -55,7 +58,11 @@ export const createBooking = async (bookingDto: BookingDto) => {
         if (!isBookingInAvailableDates(bookingDto, availabilities, bookings)) {
             throw new BadRequestError("The period of time selected is not available for booking");
         }
+        if (!property.price) {
+            throw new BadRequestError("The property doesn't have a price");
+        }
 
+        bookingDto.price = property.price;
         const returnBooking = await Booking.create(bookingDto);
         if (returnBooking) {
             notifyBookingToAdminAndOwner(bookingDto);
@@ -78,10 +85,10 @@ export const initiatePayment = async (payDto: PayDto) => {
         if (!booking) {
             throw new NotFoundError('Booking not found');
         }
-        if (booking.status === PaymentStatus.ACTIVE) {
+        if (booking.status === BookingStatus.ACTIVE) {
             throw new BadRequestError('An active payment already exists');
         }
-        if (booking.status === PaymentStatus.CANCELLED) {
+        if (booking.status === BookingStatus.CANCELLED_NON_PAYMENT) {
             throw new BadRequestError('Cancelled due to non-payment');
         }
 
@@ -109,13 +116,74 @@ export const paymentCallback = async (paymentCallbackDto: PaymentCallbackDto) =>
     try {
         if (paymentCallbackDto.status === 'success') {
             const bookingUpdate = await Booking.update(
-                { status: PaymentStatus.ACTIVE },
+                { status: BookingStatus.ACTIVE },
                 { where: { id: paymentCallbackDto.id } }
             );
 
             sendEmail(
                 'ADMIN & OWNER: Payment success',
                 `The payment for booking ${paymentCallbackDto.id} has been successful`
+            );
+
+            return bookingUpdate;
+        }
+        return null;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const initiateRefund = async (refundDto: RefundDto) => {
+    try {
+        const booking = await Booking.findByPk(refundDto.id);
+        if (!booking) {
+            throw new NotFoundError('Booking not found');
+        }
+        if (booking.status !== BookingStatus.CANCELLED_BY_TENANT) {
+            throw new BadRequestError('Booking must be cancelled by tenant to be able to refund');
+        }
+        if (!booking.ableToRefund) {
+            throw new BadRequestError('This booking does not allow refunds');
+        }
+        if (!booking.price) {
+            throw new BadRequestError('This booking does not have a valid price');
+        }
+        if (!process.env.REFUND_PERCENTAGE) {
+            throw new ServiceError("The percentage of refund is not defined. Ask an administrator.");
+        }
+
+        const refundPercentage = parseInt(process.env.REFUND_PERCENTAGE);
+        const refundData = {
+            amount: (booking.price * refundPercentage) / 100,
+            cardNumber: refundDto.cardNumber,
+            callback: `${process.env.APP_URL_MAIN}/api/bookings/${refundDto.id}/refund-callback`,
+        };
+
+        axios.post(
+            `${process.env.APP_URL_PAYMENT}/api/payments/refund`,
+            refundData,
+            { headers: { 'Content-Type': 'application/json' } }
+        );
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            throw new ServiceError('Refund initiation failed');
+        } else {
+            throw error;
+        }
+    }
+};
+
+export const refundCallback = async (paymentCallbackDto: PaymentCallbackDto) => {
+    try {
+        if (paymentCallbackDto.status === 'success') {
+            const bookingUpdate = await Booking.update(
+                { ableToRefund: false },
+                { where: { id: paymentCallbackDto.id } }
+            );
+
+            sendEmail(
+                'ADMIN & OWNER: Refund success',
+                `The refund for booking ${paymentCallbackDto.id} has been successful`
             );
 
             return bookingUpdate;
@@ -149,6 +217,69 @@ export const getBookingsAsAdminOperator = async (bookingFilterDto: BookingFilter
 
     return bookings;
 };
+
+export const getOwnBooking = async (bookingId: number, bookingMailDto: BookingMailDto) => {
+    if (bookingId <= 0) {
+        throw new BadRequestError("Id must be a positive number");
+    }
+
+    let bookings = await Booking.findAll({
+        where: {
+            id: bookingId,
+            mail: bookingMailDto.mail
+        }
+    });
+
+    if (!bookings) {
+        throw new NotFoundError("Booking not found");
+    }
+
+    return bookings;
+};
+
+export const cancelBooking = async (bookingId: number, bookingMailDto: BookingMailDto) => {
+
+    if (bookingId <= 0) {
+        throw new BadRequestError("Id must be a positive number");
+    }
+
+    let booking = await Booking.findOne({
+        where: {
+            id: bookingId,
+            mail: bookingMailDto.mail,
+            status: {
+                [Op.or]: [BookingStatus.ACTIVE, BookingStatus.PENDING]
+            }
+        }
+    });
+
+    if (!booking) {
+        throw new NotFoundError("Booking not found");
+    }
+    if (!booking.createdAt) {
+        throw new ServiceError("Something went wrong checking the date in which the booking was created");
+    }
+    if (!process.env.DAYS_ALLOWED_TO_CANCEL_BOOKING) {
+        throw new ServiceError("The allowed refund time is not defined. Ask an administrator.");
+    }
+
+    const daysAllowedToCancelBooking = parseInt(process.env.DAYS_ALLOWED_TO_CANCEL_BOOKING);
+    const tooLateToCancel = (getTodayDate() >= addDaysToDate(booking.createdAt, daysAllowedToCancelBooking))
+        || (getTodayDate() >= parseDate(booking.startDate));
+    if (tooLateToCancel && booking.status === BookingStatus.ACTIVE) {
+        throw new BadRequestError("You can't cancel this booking. The allowed period of time to cancel your booking has ended.");
+    } else if (booking.status === BookingStatus.ACTIVE) {
+        booking.ableToRefund = true;
+        booking.status = BookingStatus.CANCELLED_BY_TENANT;
+        await booking.save();
+    } else if (booking.status === BookingStatus.PENDING) {
+        booking.status = BookingStatus.CANCELLED_BY_TENANT;
+        await booking.save();
+    }
+
+    return booking;
+};
+
 
 const isBookingInAvailableDates = (booking: BookingDto, ranges: AvailabilityInstance[], existingBookings: BookingInstance[]) => {
     let available = false;
