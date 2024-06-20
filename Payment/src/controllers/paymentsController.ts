@@ -11,3 +11,14 @@ export const createPayment = async (req: Request, res: Response, next: NextFunct
         next(error);
     }
 };
+
+export const createRefund = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        await paymentsService.createPayment(req.body);
+        res.status(201).json({
+            message: 'Refund successful'
+        });
+    } catch (error) {
+        next(error);
+    }
+};

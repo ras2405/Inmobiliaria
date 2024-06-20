@@ -16,9 +16,11 @@ export const bookingSchema = z.object({
         .transform((date) => new Date(date)),
     endDate: z.string().refine((date) => !isNaN(Date.parse(date)), { message: "Invalid date format" })
         .transform((date) => new Date(date)),
-    price: z.string()
-    .transform((val) => parseInt(val))
-    .refine((val) => val === undefined, { message: 'Bad request.' }).optional(),
 });
 
-export type BookingDto = z.infer<typeof bookingSchema>;
+export const bookingWithPrice = bookingSchema.extend({
+    price: z.number().positive()
+});
+
+
+export type BookingDto = z.infer<typeof bookingWithPrice>;

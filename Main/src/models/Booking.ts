@@ -20,7 +20,7 @@ interface BookingAttributes {
     endDate: Date;
     createdAt?: Date;
     price?: number;
-    paymentDone?: boolean;
+    ableToRefund?: boolean;
 }
 
 interface BookingCreationAttributes extends Optional<BookingAttributes, 'id'> { }
@@ -139,10 +139,11 @@ const Booking = sequelize.define<BookingInstance>('bookings', {
     price: {
         type: DataTypes.INTEGER
     },
-    paymentDone: {
+    ableToRefund: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
-    },
+        allowNull: false
+    }
 }, {
     tableName: 'Bookings',
     timestamps: false

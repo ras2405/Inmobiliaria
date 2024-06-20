@@ -15,7 +15,7 @@ import { filterByString, filterByDifferentNumber } from "../utils/filterFunction
 import { sendEmail } from "../utils/sendEmail";
 import { BookingMailDto } from "../schemas/bookingIdMail";
 import { addDaysToDate, getTodayDate, parseDate } from "../utils/dateUtils";
-import { daysAllowedToCancelBooking } from "../constants/refund";
+import { RefundDto } from "../schemas/refundSchema";
 
 export const createBooking = async (bookingDto: BookingDto) => {
 
@@ -34,8 +34,7 @@ export const createBooking = async (bookingDto: BookingDto) => {
                 where: {
                     status: {
                         [Op.ne]: [BookingStatus.CANCELLED_BY_TENANT,
-                                BookingStatus.CANCELLED_BY_TENANT,
-                                BookingStatus.CANCELLED]
+                                BookingStatus.CANCELLED_BY_TENANT]
                     }
                 }
             }]
@@ -59,6 +58,9 @@ export const createBooking = async (bookingDto: BookingDto) => {
 
         if (!isBookingInAvailableDates(bookingDto, availabilities, bookings)) {
             throw new BadRequestError("The period of time selected is not available for booking");
+        }
+        if(!property.price){
+            throw new BadRequestError("The property doesn't have a price");
         }
 
         bookingDto.price = property.price;
@@ -122,6 +124,67 @@ export const paymentCallback = async (paymentCallbackDto: PaymentCallbackDto) =>
             sendEmail(
                 'ADMIN & OWNER: Payment success',
                 `The payment for booking ${paymentCallbackDto.id} has been successful`
+            );
+
+            return bookingUpdate;
+        }
+        return null;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const initiateRefund = async (refundDto: RefundDto) => {
+    try {
+        const booking = await Booking.findByPk(refundDto.id);
+        if (!booking) {
+            throw new NotFoundError('Booking not found');
+        }
+        if (booking.status !== BookingStatus.CANCELLED_BY_TENANT) {
+            throw new BadRequestError('Booking must be cancelled by tenant to be able to refund');
+        }
+        if (!booking.ableToRefund){
+            throw new BadRequestError('This booking does not allow refunds');
+        }
+        if(!booking.price){
+            throw new BadRequestError('This booking does not have a valid price');
+        }
+        if(!process.env.REFUND_PERCENTAGE){
+            throw new ServiceError("The percentage of refund is not defined. Ask an administrator.");
+        }
+
+        const refundPercentage = parseInt(process.env.REFUND_PERCENTAGE);
+        const refundData = {
+            amount: (booking.price * refundPercentage) / 100,
+            cardNumber: refundDto.cardNumber,
+            callback: `${process.env.APP_URL_MAIN}/api/bookings/${refundDto.id}/refund-callback`,
+        };
+
+        axios.post(
+            `${process.env.APP_URL_PAYMENT}/api/payments/refund`,
+            refundData,
+            { headers: { 'Content-Type': 'application/json' } }
+        );
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+            throw new ServiceError('Refund initiation failed');
+        } else {
+            throw error;
+        }
+    }
+};
+
+export const refundCallback = async (paymentCallbackDto: PaymentCallbackDto) => {
+    try {
+        if (paymentCallbackDto.status === 'success') {
+            const bookingUpdate = await Booking.update(
+                { ableToRefund: false },
+                { where: { id: paymentCallbackDto.id } }
+            );
+
+            sendEmail(
+                'ADMIN & OWNER: Refund success',
+                `The refund for booking ${paymentCallbackDto.id} has been successful`
             );
 
             return bookingUpdate;
@@ -197,12 +260,20 @@ export const cancelBooking = async (bookingId:number, bookingMailDto:BookingMail
     if(!booking.createdAt){
         throw new ServiceError("Something went wrong checking the date in which the booking was created");
     }
+    if(!process.env.DAYS_ALLOWED_TO_CANCEL_BOOKING){
+        throw new ServiceError("The allowed refund time is not defined. Ask an administrator.");
+    }
 
+    const daysAllowedToCancelBooking = parseInt(process.env.DAYS_ALLOWED_TO_CANCEL_BOOKING);
     const tooLateToCancel = (getTodayDate() >= addDaysToDate(booking.createdAt,daysAllowedToCancelBooking))
                             || (getTodayDate() >= parseDate(booking.startDate));
     if(tooLateToCancel && booking.status === BookingStatus.ACTIVE){
         throw new BadRequestError("You can't cancel this booking. The allowed period of time to cancel your booking has ended.");
-    }else{
+    }else if(booking.status === BookingStatus.ACTIVE){
+        booking.ableToRefund = true;
+        booking.status = BookingStatus.CANCELLED_BY_TENANT;
+        await booking.save();
+    }else if(booking.status === BookingStatus.PENDING){
         booking.status = BookingStatus.CANCELLED_BY_TENANT;
         await booking.save();
     }

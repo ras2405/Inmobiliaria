@@ -94,7 +94,7 @@ const Property = sequelize.define<PropertyInstance>('Property', {
     },
     price: {
         type: DataTypes.INTEGER
-    },
+    }
 }, {
     tableName: 'Properties',
     timestamps: false
