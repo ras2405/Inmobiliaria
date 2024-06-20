@@ -99,7 +99,7 @@ export const start = async () => {
                 const data = generateSensorData(sensorId, fileData);
                 const validatedData = sensorValueSchema.parse(data);
                 await saveSensorData(validatedData, `${sensorId}.json`);
-
+                console.info(`New Sensor data written to ${filePath}:`, data);
             } catch (error) {
                 console.error(`Error writing data to ${filePath}:`, error);
             }

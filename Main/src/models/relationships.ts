@@ -10,6 +10,6 @@ export const setRelationships = async () => {
     Property.hasMany(Booking, { foreignKey: 'propertyId', as: 'bookings' });
     Booking.belongsTo(Property, { foreignKey: 'propertyId', as: 'property' });
 
-    Property.belongsToMany(PropertySensor, { through: 'PropertiesSensors', foreignKey: 'propertyId', as: 'propertySensors' });
-    PropertySensor.belongsToMany(Property, { through: 'PropertiesSensors', foreignKey: 'sensorId', as: 'properties' });
+    Property.belongsTo(PropertySensor, { foreignKey: 'sensorId', as: 'sensor' });
+    PropertySensor.hasMany(Property, { foreignKey: 'sensorId', as: 'properties' });
 };

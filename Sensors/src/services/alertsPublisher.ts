@@ -13,6 +13,7 @@ export const publishAlerts = async (alerts: AlertDto[]) => {
         await channel.assertQueue(QUEUE, { durable: true, maxPriority: MAX_PRIORITY });
 
         alerts.forEach(alert => {
+            console.info(`Publishing alert for sensor ${alert.id}: ${alert.message}`);
             channel.sendToQueue(QUEUE, Buffer.from(JSON.stringify(alert)), { priority: alert.priority, persistent: true });
         });
 

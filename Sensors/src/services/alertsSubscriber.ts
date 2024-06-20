@@ -27,9 +27,9 @@ export const processAlerts = async () => {
 };
 
 export const sendAlert = async (alert: AlertDto) => {
-    sendEmail(
-        'ADMIN: New sensor alert',
-        `Sensor ${alert.id}: ${alert.message}`
-    );
+    // sendEmail(
+    //     'ADMIN: New sensor alert',
+    //     `Sensor ${alert.id}: ${alert.message}`
+    // );
     console.info(`>>> Sending alert (mail) for sensor ${alert.id}: ${alert.message}`);
 };
