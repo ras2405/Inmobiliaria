@@ -1,6 +1,6 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import { sequelize } from '../config/database';
-import { PaymentStatus } from '../constants/payments';
+import { BookingStatus, PaymentStatus } from '../constants/payments';
 
 interface BookingAttributes {
     id?: number;
@@ -12,13 +12,15 @@ interface BookingAttributes {
     phone: string;
     country: string;
     state: string;
-    status?: PaymentStatus;
+    status?: BookingStatus;
     adults: number;
     kids: number;
     propertyId: number;
     startDate: Date;
     endDate: Date;
     createdAt?: Date;
+    price?: number;
+    ableToRefund?: boolean;
 }
 
 interface BookingCreationAttributes extends Optional<BookingAttributes, 'id'> { }
@@ -89,8 +91,8 @@ const Booking = sequelize.define<BookingInstance>('bookings', {
         allowNull: false,
     },
     status: {
-        type: DataTypes.ENUM(...Object.values(PaymentStatus)),
-        defaultValue: PaymentStatus.PENDING
+        type: DataTypes.ENUM(...Object.values(BookingStatus)),
+        defaultValue: BookingStatus.PENDING
     },
     adults: {
         type: DataTypes.INTEGER,
@@ -132,6 +134,14 @@ const Booking = sequelize.define<BookingInstance>('bookings', {
     createdAt: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
+        allowNull: false
+    },
+    price: {
+        type: DataTypes.INTEGER
+    },
+    ableToRefund: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false,
         allowNull: false
     }
 }, {

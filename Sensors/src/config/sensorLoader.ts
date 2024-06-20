@@ -1,13 +1,11 @@
-import * as fs from 'fs';
-import path from 'path';
+import * as fs from 'fs/promises';
+import { NotFoundError } from '../exceptions/NotFountError';
 
-export const loadSensorData = async (dir: string) => {
-    const sensorFiles = fs.readdirSync(dir).filter(file => file.endsWith('.json'));
-    return sensorFiles.map(file => {
-        const filePath = path.join(dir, file);
-        const data = fs.readFileSync(filePath, 'utf-8');
-        return JSON.parse(data);
-    });
+export const loadSensorData = async (filePath: string) => {
+    try {
+        const sensorFiles = await fs.readFile(filePath, 'utf-8');
+        return JSON.parse(sensorFiles);
+    } catch (error) {
+        throw new NotFoundError('Sensor not found in the written path');
+    }
 };
-
-export const sensorData = loadSensorData('../sensors');// REVISAR DONDE SE TENDRIA QUE LLAMAR

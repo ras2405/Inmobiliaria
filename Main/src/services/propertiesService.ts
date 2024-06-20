@@ -12,11 +12,10 @@ import { PropertyFilterDto } from "../schemas/propertyFilter";
 import { Availability, AvailabilityInstance } from "../models/Availability";
 import { Booking, BookingInstance } from "../models/Booking";
 import { BadRequestError } from "../exceptions/BadRequestError";
-import { format, toZonedTime } from 'date-fns-tz';
-import { parse } from "date-fns";
 import { Op } from "sequelize";
 import { filterByBoolean, filterByString, filterByGreaterThan, filterByLessThan } from "../utils/filterFunctions";
 import { sendEmail } from "../utils/sendEmail";
+import { getTodayDate, addDaysToDate, parseDate, isOneDayLater } from "../utils/dateUtils";
 
 export const findAllProperties = async () => {
     return await Property.findAll();
@@ -287,37 +286,6 @@ const sortDateRanges = (ranges: AvailabilityInstance[] | BookingInstance[]) => {
 
     return ranges;
 };
-
-function isOneDayLater(date1: Date, date2: Date): boolean {
-    const date1copy = new Date(date1);
-    const date2copy = new Date(date2);
-
-    date1copy.setDate(date1copy.getDate() + 1);
-
-    return date1copy.toDateString() === date2copy.toDateString();
-}
-
-function addDaysToDate(date: Date, days: number): Date {
-    const date1copy = new Date(date);
-    date1copy.setDate(date1copy.getDate() + days);
-    return date1copy;
-}
-
-function getTodayDate(): Date {
-
-    const timeZone = 'America/Montevideo';
-    const now = new Date();
-    const zonedDate = toZonedTime(now, timeZone);
-    const formattedDate = format(zonedDate, 'yyyy-MM-dd', { timeZone });
-    const date = parse(formattedDate, 'yyyy-MM-dd', new Date());
-
-    return date;
-}
-
-function parseDate(date: string | Date): Date {
-    const parsedDate = new Date(date);
-    return parsedDate;
-}
 
 function parseBool(value: string | boolean): boolean {
     if (typeof value === "string") {
